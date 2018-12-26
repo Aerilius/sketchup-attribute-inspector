@@ -1,0 +1,123 @@
+.iSselected { background-color: red !important; }
+body,header,main,h1,h2,h3,p,dl,dt,dd,pre,code {
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+}
+
+ul {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+/* Tree core functionality and visibility */
+
+ul[role="tree"] {
+  outline: none;
+}
+
+ul[role="tree"] li {
+  list-style: none;
+}
+
+ul[role="tree"] li[aria-selected="true"] {
+  outline: none;
+}
+
+ul[role="tree"] li[aria-expanded="false"]>ul {
+  display: none;
+}
+
+ul[role="tree"] li[aria-expanded="true"]>ul {
+  display: block;
+}
+
+/* Tree styling */
+
+.a11ytree {
+}
+
+.a11ytree ul {
+  padding-left: 0em;
+}
+
+.a11ytree li {
+  position: relative;
+  margin-left: 1em;
+  padding-left: 0em;
+}
+
+.a11ytree li .tree-view-node-label {
+  display: inline-block;
+  border: dotted 1px #eee;
+  margin-top: -1px; /* for collapsing dotted borders */
+  padding: 0.2em 0.2em;
+  white-space: pre;
+  min-height: 1em; /* to prevent zero height box when empty text */
+}
+
+.a11ytree li[aria-selected="true"] {
+  outline: none;
+}
+
+.a11ytree li[aria-selected="true"] > .tree-view-node-label {
+  z-index: 1;
+  background-color: Highlight;
+  color: HighlightText;
+  border-color: transparent;
+  border-style: solid;
+}
+
+.a11ytree li[aria-selected="true"] ul {
+  color: WindowText;
+}
+
+.a11ytree li .at-toggle {
+  float: left;
+  width: 1em;
+  margin-left: -1em;
+  padding: 0.2em 0; /* same as .a11ytree li .tree-view-node-label */
+  color: WindowText;
+  text-align: center;
+  /* Extend click area of branch arrow button to the right */
+  position: relative;
+  margin-right: -1em;
+  padding-right: 1em;
+  z-index: 1;
+}
+
+/* Symbols */
+
+.a11ytree li .at-toggle:before, .a11ytree li > .at-toggle:before {
+  transition-duration: 0.5s;
+  display: block;
+  content: "▶";
+}
+
+.a11ytree li .at-toggle:before, .a11ytree li[aria-expanded="false"] > .at-toggle:before {
+  transform: rotate(0deg);
+}
+
+.a11ytree li[aria-expanded="true"] > .at-toggle:before {
+  transform: rotate(90deg);
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+}
+
+/* Workarounds */
+
+/* IE doesn't know ▶ and due to a font bug, the right character (U+25B6 ▶) is located at U+25BA (►). */
+/*html.ie8 .a11ytree li .at-toggle:before, html.ie8 .a11ytree li[aria-expanded="false"] > .at-toggle:before {
+  content: "►";
+}*/
+
+/* In IE8, attribute selectors are buggy and font rendering (font color) doesn't 
+ * refresh when aria-selected is not anymore "true" while background color refreshes
+ * (to transparent/white). Since HighlightText color is often white, it would 
+ * become unreadable on white background, so we override it to dark on white background. */
+html.ie8 .a11ytree li > .tree-view-node-label {
+  color: WindowText;
+}
+/*html.ie8 .a11ytree li[aria-selected="true"] > .tree-view-node-label {
+  border: solid 1px Highlight;
+  background-color: transparent;
+}*/

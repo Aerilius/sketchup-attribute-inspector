@@ -1,0 +1,144 @@
+// Extension Metadata
+"Attribute Inspector"="Attributinspektor";
+"A viewer for entity and model attributes"="Ein Betrachter für Element- und Modellattribute";
+"Select an entity to view and edit its attribute dictionaries."="Wähle ein Element aus und bearbeite seine Attributwörterbücher.";
+
+// Types
+"String"="String";
+"Integer"="Integer";
+"Float"="Float";
+"Length"="Länge";
+"Array"="Liste";
+"Boolean"="Boolean";
+"NilClass"="Null";
+"Geom::Point3d"="Punkt";
+"Geom::Vector3d"="Vektor";
+"Sketchup::Color"="Farbe";
+"Time"="Zeit";
+
+// General
+"dictionary"="Wörterbuch";
+"attribute"="Attribut";
+"value"="Wert";
+"type"="Typ";
+
+// Operation names (for example in Undo)
+"Add attribute dictionary \"%0\""="Attributwörterbuch „%0“ hinzufügen";
+"Rename attribute dictionary \"%0\" to \"%1\""="Attributwörterbuch „%0“ in „%1“ umbennenen";
+"Remove attribute dictionary \"%0\""="Attributwörterbuch „%0“ entfernen";
+"Set attribute \"%0\" to \"%1\""="Attribut „%0“ auf „%1“ setzen";
+"Rename attribute \"%0\" to \"%1\""="Attribut „%0“ in „%1“ umbennen";
+"Remove attribute \"%0\""="Attribut „%0“ entfernen";
+
+// Error messages
+"Attribute \"%0\" could not be renamed into \"%1\""="Attribut „%0“ konnte nicht in „%1“ umbenannt werden";
+"\"%0\" is not a valid %1"="„%0“ entspricht nicht dem Typ %1";
+
+// Button titles
+"Add a new dictionary"="Neues Wörterbuch hinzufügen";
+"Add a nested dictionary"="Verschachteltes Wörterbuch hinzufügen";
+"Rename the selected dictionary"="Ausgewähltes Wörterbuch umbenennen";
+"Remove the selected dictionary"="Ausgewähltes Wörterbuch entfernen";
+"Add a new attribute"="Neues Attribut hinzufügen";
+"Remove the selected attribute"="Ausgewähltes Attribut entfernen";
+
+// Default texts
+"This entity has not yet any attribute dictionaries."="Dieses Element hat noch keine Wörterbücher.";
+"These entities have not yet any attribute dictionaries."="Diese Elemente haben noch keine Wörterbücher.";
+"This dictionary has not yet any attributes."="Dieses Wörterbuch hat noch keine Attribute.";
+
+// Entity types
+"inspect currently selected"="untersuche aktuell ausgewählte";
+"How to select other entity types"="Um Attribute von anderen Elemententypen zu sehen, wähle den Typ aus und verwende den Materialbrowser um ein Material auszuwählen, den Layermanager um einen Layer auszuwählen (Radiobutton) oder den Szenenmanager um eine Szene auszuwählen (Doppelklick).";
+"drawing elements"="Zeichenelemente";
+"component definitions"="Komponentendefinitionen";
+"materials"="Materialien";
+"layers"="Layer";
+"scenes"="Szenen";
+"styles"="Stile";
+"DRAWING_ELEMENTS"="Zeichenelemente";
+"DEFINTIONS"="Komponentendefinitionen";
+"MATERIALS"="Materialien";
+"LAYERS"="Layer";
+"PAGES"="Szenen";
+"STYLES"="Stile";
+
+// WebDialog prompt
+"Choose a dictionary name:"="Wörterbuchname auswählen:";
+"Ok"="Ok";
+"Abort"="Abbrechen";
+
+// Other WebDialog texts
+"When you change a grayed out value that is not shared by all selected entities, it will be added to all selected entities."="Wenn ein ausgegrauter Wert geändert wird, der nicht in allen ausgewählten Elementen enthalten ist, wird er zu allen ausgewählten Elementen hinzugefügt.";
+"Allow editing grayed values"="Ausgegraute Werte verändern";
+
+// Quotes
+"\"%0\""="„%0“";
+
+// Title
+"No entity selected"="Kein Element ausgewählt";
+"entities"="Elemente";
+"see also: "="siehe auch: ";
+"see also: %0"="siehe auch: %0";
+"currently selected %0"="aktuell ausgewählte(r/s) %0";
+
+// Names of entity types
+"Model"="Modell";
+"ArcCurve"="Bogen";
+"ArcCurves"="Bögen";
+"Circle"="Kreis";
+"Circles"="Kreise";
+"Curve"="Kurve";
+"Curves"="Kurven";
+"Edge"="Kante";
+"Edges"="Kanten";
+"Face"="Fläche";
+"Faces"="Flächen";
+"Group"="Gruppe";
+"Groups"="Gruppen";
+"ComponentInstance"="Komponenteninstanz";
+"ComponentInstances"="Komponenteninstanzen";
+"ComponentDefinition"="Komponentendefinition";
+"ComponentDefinitions"="Komponentendefinitionen";
+"Image"="Bild";
+"Images"="Bilder";
+"Text"="Text";
+"Texts"="Texte";
+"ConstructionLine"="Konstruktionslinie";
+"ConstructionLine"="Konstruktionslinien";
+"ConstructionPoint"="Konstruktionspunkt";
+"ConstructionPoints"="Konstruktionspunkte";
+"DimensionLinear"="Lineare Abmessung";
+"DimensionLinears"="Lineare Abmessungen";
+"DimensionRadial"="Radiale Abmessung";
+"DimensionRadials"="Radiale Abmessungen";
+"SectionPlane"="Schnittebene";
+"SectionPlanes"="Schnittebenen";
+"Material"="Material";
+"Materials"="Materialien";
+"Layer"="Layer";
+"Layers"="Layer";
+"ViewPage"="Szene";
+"ViewPages"="Szenen";
+"Texture"="Textur";
+"Textures"="Texturen";
+"Loop"="Schleife";
+"Loops"="Schleifen";
+"EdgeUse"="EdgeUse";
+"EdgeUses"="EdgeUses";
+"ComponentBehavior"="ComponentBehavior";
+"ComponentBehaviors"="ComponentBehaviors";
+"AttributeDictionary"="Wörterbuch";
+"AttributeDictionarys"="Wörterbücher";
+"SkpStyle"="Stil";
+"SkpStyles"="Stile";
+
+// Names of lists objects
+"AttributeDictionaries"="Wörterbuchliste";
+"DefinitionList"="Komponentendefinitionsliste";
+"MaterialManager"="Materialienliste";
+"LayerManager"="Ebenenliste";
+"PageList"="Szenenliste";
+"RenderingOptions"="Renderingoptionen";
+"ShadowInfo"="Schatteninfo";
+"SkpStyleManager"="Stil-Liste";

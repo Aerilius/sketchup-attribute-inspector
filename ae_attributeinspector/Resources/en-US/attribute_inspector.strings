@@ -1,0 +1,142 @@
+// Extension Metadata
+"Attribute Inspector"="Attribute Inspector";
+"A viewer for entity and model attributes"="A viewer for entity and model attributes";
+"Select an entity to view and edit its attribute dictionaries."="Select an entity to view and edit its attribute dictionaries.";
+
+// Types
+"String"="String";
+"Integer"="Integer";
+"Float"="Float";
+"Length"="Length";
+"Array"="List";
+"Boolean"="Boolean";
+"NilClass"="Null";
+"Geom::Point3d"="Point";
+"Geom::Vector3d"="Vector";
+"Sketchup::Color"="Color";
+"Time"="Time";
+
+// General
+"dictionary"="dictionary";
+"attribute"="attribute";
+"value"="value";
+"type"="type";
+
+// Operation names (for example in Undo)
+"Add attribute dictionary \"%0\""="Add attribute dictionary \"%0\"";
+"Rename attribute dictionary \"%0\" to \"%1\""="Rename attribute dictionary \"%0\" to \"%1\"";
+"Remove attribute dictionary \"%0\""="Remove attribute dictionary \"%0\"";
+"Set attribute \"%0\" to \"%1\""="Set attribute \"%0\" to \"%1\"";
+"Rename attribute \"%0\" to \"%1\""="Rename attribute \"%0\" to \"%1\"";
+"Remove attribute \"%0\""="Remove attribute \"%0\"";
+
+// Error messages
+"Attribute \"%0\" could not be renamed into \"%1\""="Attribute \"%0\" could not be renamed into \"%1\"";
+"\"%0\" is not a valid %1"="\"%0\" is not a valid %1";
+
+// Button titles
+"Add a new dictionary"="Add a new dictionary";
+"Add a nested dictionary"="Add a nested dictionary";
+"Rename the selected dictionary"="Rename the selected dictionary";
+"Remove the selected dictionary"="Remove the selected dictionary";
+"Add a new attribute"="Add a new attribute";
+"Remove the selected attribute"="Remove the selected attribute";
+
+// Default texts
+"This entity has not yet any attribute dictionaries."="This entity has not yet any attribute dictionaries."
+"These entities have not yet any attribute dictionaries."="These entities have not yet any attribute dictionaries."
+"This dictionary has not yet any attributes."="This dictionary has not yet any attributes."
+
+// Entity types
+"inspect currently selected"="inspect currently selected";
+"How to select other entity types"="To view attributes of other entity types, select the option below and the use the materials browser to select a material, the layers manager to select a layer (radio box) or the scenes manager to select a scene (double-click).";
+"drawing elements"="drawing elements";
+"component definitions"="component definitions";
+"materials"="materials";
+"layers"="layers";
+"scenes"="scenes";
+"styles"="styles";
+"DRAWING_ELEMENTS"="drawing elements";
+"DEFINTIONS"="component definitions";
+"MATERIALS"="materials";
+"LAYERS"="layers";
+"PAGES"="scenes";
+"STYLES"="styles";
+
+// WebDialog prompt
+"Choose a dictionary name:"="Choose a dictionary name:";
+"Ok"="Ok";
+"Abort"="Abort";
+
+// Other WebDialog texts
+"When you change a grayed out value that is not shared by all selected entities, it will be added to all selected entities."="When you change a grayed out value that is not shared by all selected entities, it will be added to all selected entities.";
+"Allow editing grayed values"="Allow editing grayed values";
+
+// Quotes
+"\"%0\""="\"%0\"";
+
+// Title
+"No entity selected"="No entity selected";
+"entities"="entities";
+"see also: "="see also: ";
+"see also: %0"="see also: %0";
+"currently selected %0"="currently selected %0";
+
+// Names of entity types
+"Model"="model";
+"ArcCurve"="arc";
+"ArcCurves"="arcs";
+"Circle"="circle";
+"Circles"="circles";
+"Curve"="curve";
+"Curves"="curves";
+"Edge"="edge";
+"Edges"="edges";
+"Face"="face";
+"Faces"="faces";
+"Group"="group";
+"Groups"="groups";
+"ComponentInstance"="component instance";
+"ComponentInstances"="component instances";
+"ComponentDefinition"="component definition";
+"ComponentDefinitions"="component definitions";
+"Image"="image";
+"Images"="images";
+"Text"="text";
+"Texts"="texts";
+"ConstructionLine"="construction line";
+"ConstructionLine"="construction lines";
+"ConstructionPoint"="construction point";
+"ConstructionPoints"="construction points";
+"DimensionLinear"="linear dimension";
+"DimensionLinears"="linear dimensions";
+"SectionPlane"="section plane";
+"SectionPlanes"="section planes";
+"Material"="material";
+"Materials"="materials";
+"Layer"="layer";
+"Layers"="layers";
+"ViewPage"="scene";
+"ViewPages"="scenes";
+"Texture"="texture";
+"Textures"="textures";
+"Loop"="loop";
+"Loops"="loops";
+"EdgeUse"="EdgeUse";
+"EdgeUses"="EdgeUses";
+"ComponentBehavior"="ComponentBehavior";
+"ComponentBehaviors"="ComponentBehaviors";
+"AttributeDictionary"="dictionary";
+"AttributeDictionarys"="dictionaries";
+"SkpStyle"="style";
+"SkpStyles"="styles";
+
+// Names of lists objects
+"AttributeDictionaries"="dictionary list"
+"DefinitionList"="component definitions list";
+"MaterialManager"="materials list";
+"LayerManager"="layers list";
+"PageList"="scenes list";
+"RenderingOptions"="rendering options";
+"ShadowInfo"="ShadowInfo";
+"SkpStyleManager"="style list";

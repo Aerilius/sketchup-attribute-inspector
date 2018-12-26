@@ -1,0 +1,470 @@
+/* General Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    position: fixed; /* Prevents scrolling of content in IE. */
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background-color: Window;
+    color: WindowText;
+    font: message-box; /* use system font */
+    font-size: 70% !important; /* This overrides the font-size contained in the system font if it does not follow dpi settings. */
+    cursor: default;
+    user-select: none;
+}
+
+[unselectable=on] {
+    user-select: none;
+}
+
+input,
+label,
+select {
+    cursor: pointer;
+    min-height: 1.2em;
+    vertical-align: middle;
+    font: message-box; /* use system font */
+    font-size: 100% !important; /* This overrides the font-size contained in the system font if it does not follow dpi settings. */
+}
+
+textarea {
+    font: message-box; /* use system font */
+    font-size: 100% !important; /* This overrides the font-size contained in the system font if it does not follow dpi settings. */
+}
+
+input[type=button] {
+    min-height: 1em;
+    padding: 0;
+}
+
+input[type=text],
+input[type=number] {
+    cursor: auto;
+}
+
+/* Numeric input element */
+input[type=text].num,
+input[type=number] {
+    text-align: right;
+    width: 2.5em;
+    padding-right: .5em;
+}
+
+/*button {
+    font: message-box;
+    font-size: 100% !important;
+    color: ButtonText;
+    padding: 0.125em 0.25em;
+    line-height: 1.2em;
+    vertical-align: middle;
+}*/
+button {
+    font: message-box; /* use system font */
+    font-size: 100% !important; /* This overrides the font-size contained in the system font if it does not follow dpi settings. */
+    color: ButtonText;
+    vertical-align: middle;
+}
+
+form {
+    padding: 1em;
+}
+
+fieldset {
+    text-indent: 0 !important;
+    margin-bottom: 1em;
+    margin-right: 0 !important;
+    padding: 1em;
+    padding-top: 0 !important;
+}
+
+fieldset div {
+    clear: both;
+    line-height: 2em;
+}
+
+fieldset div > :first-child {
+    width: 100%;
+}
+
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+.vertical-centered-parent {
+    display: table;
+}
+
+.vertical-centered-parent > *,
+.vertical-centered {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/* editable text */
+
+input.editable,
+textarea.editable {
+    width: 100%;
+    font: inherit;
+    height: 1.25em;
+    min-height: 1.25em;
+    line-height: 1.25em;
+    margin: 0;
+    overflow-y: auto;
+    resize: vertical; /* not supported in IE<=11 */
+}
+
+
+
+/* AttributeInspector UI elements */
+
+
+
+/* Grid: Top toolbar and two panes */
+
+.top-toolbar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 2.5em;
+    overflow: hidden;
+}
+
+#dictionary-pane,
+#attributes-pane {
+    position: absolute;
+    top: 2.5em; /* top toolbar */
+    bottom: 0;
+    margin-top: 1px;
+}
+
+#dictionary-pane {
+    left: 0;
+    width: 33%;
+}
+
+#attributes-pane {
+    right: 0;
+    width: 67%;
+}
+
+/* Invisible divider to resize the panes */
+
+.divider-vertical {
+    position: absolute; /* requires parent to have position: relative */
+    z-index: 1;
+    top: 0;
+    right: 0;
+    width: 0.5em;
+    min-width: 0.5em; /* override */
+    height: 100%;
+    margin-right: -0.25em;
+    background: transparent;
+    border: none;
+    user-select: none;
+}
+
+
+
+/* Content areas of left/right pane */
+
+#dictionary-list,
+#attributes-list {
+    position: absolute;
+    top: 0;
+    bottom: 2.5em; /* bottom toolbar */
+    left: 0;
+    right: 0;
+    border: 1px ThreeDShadow solid;
+}
+
+#dictionary-list {
+    background: white;
+    border-left: none;
+    border-right: none;
+    overflow-x: auto;
+    overflow-y: auto;
+    padding: 1em 0;
+}
+
+#attributes-list {
+    border-right: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* Bottom toolbar */
+
+.bottom-toolbar.left {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2.5em;
+}
+
+
+
+/* Layout behaviors for the very complicated nested boxes to achieve a flexible layout. */
+
+/* Spread contained elements by their content width using table layout. */
+.horizontal-flex-parent {
+    display: table;
+}
+.horizontal-flex-parent > * {
+    display: table-cell;
+    height: inherit;
+    vertical-align: top; /* to prevent odd layout issue, breaking into two lines. */
+}
+
+/* Clip content: Injected div as workaround because elements with table layout ignore height and overflow. */
+.clip-box {
+    height:inherit;
+    overflow: hidden;
+}
+
+/* Allign contained block elements vertically in the middle of their parent. */
+.vertical-centered-parent {
+    display: table;
+    height: inherit;
+}
+.vertical-centered-parent > *,
+.vertical-centered {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+/* Additional styles for top and bottom toolbar */
+.toolbar.vertical-centered-parent {
+    border-spacing: 0.5em 0;
+}
+
+/* Additional styles for top toolbar */
+.horizontal-flex-parent .toolbar.right {
+    text-align: right;
+    width: 100%;
+}
+
+
+
+/* Titles */
+
+#selection-title {
+    display: inline;
+    font: caption;
+    font-size: 1.125em!important;
+    font-weight: bold!important;
+}
+
+#related-title {
+    display: inline-block;
+    font-size: 80%;
+    /*color: GrayText;*/
+    margin-left: 1em;
+}
+
+#related-title a {
+    text-decoration: underline;
+}
+
+
+
+/* Table */
+
+.attribute-table {
+    background: white;
+    border-collapse: collapse;
+    bottom: 2em;
+    width: 100%;
+}
+
+.attribute-table th {
+    text-align: center;
+    font-size: 0.75em;
+}
+
+/* Indicates the divider for table columns */
+.attribute-table th:first-child {
+    border-right: 1px ThreeDShadow dotted;
+}
+
+/* Add an invisible border to allow highlighting */
+/* Align cell content on top */
+.attribute-table tr {
+    border: 3px transparent none;
+    vertical-align: top;
+}
+
+.attribute-table td {
+    border: 1px #eeeeee /*ThreeDShadow*/ solid!important;
+    line-height: 0.5em; /* hack to make element expand not further than height of contained .editable */
+}
+
+.attribute-table td .editable {
+    background: transparent;
+    color: inherit;
+    border: none;
+}
+
+.attribute-table tr.selected {
+    /*outline: 3px Highlight solid;*/
+    background: Highlight;
+    color: HighlightText;
+}
+
+
+
+.invalid {
+    color: red !important;
+}
+
+
+
+.grayed,
+.grayed .editable {
+    color: lightgray;
+}
+
+
+
+/* Buttons */
+
+.toolbar button {
+  min-height: 1.25em; /* For Safari, which ignores all other/smaller button size properties. */
+  line-height: 1.25em;
+  min-width: 1.25em;
+  padding: 0;
+  overflow: hidden;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.toolbar button img {
+  vertical-align: middle;
+  width: 1em;
+  height: 1em;
+  padding: 0.125em;
+}
+
+.toolbar button:disabled img {
+  opacity: 0.3;
+}
+
+/* Overlay toolbar for small buttons to expand/collapse the treeview */
+
+.overlay-toolbar {
+    position: absolute;
+    z-index: 1;
+}
+.overlay-toolbar.right {
+    right: 0;
+    float: right;
+}
+.overlay-toolbar button {
+    width: 1.25em;
+    height: 1.25em;
+    /* Add some space to avoid overlap with container border */
+    position: relative;
+    top: 1px;
+    right: 1px;
+}
+.overlay-toolbar button:not(:hover) {
+    background: transparent;
+    border: none;
+}
+.overlay-toolbar button img {
+    width: 0.75em;
+    height: 0.75em;
+}
+
+/* Messages */
+
+.message-no-dictionaries,
+.message-no-attributes {
+    color: silver;
+    font-size: 1.5em;
+    text-align: center;
+    padding: 2em 0.5em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+
+
+/* Prompt */
+
+.prompt.prompt-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    height: 100%;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAA1JREFUCNdjCAkJqQcAA3gBfJ4UYBwAAAAASUVORK5CYII=);
+    background: rgba(64, 64, 64, 0.25);
+}
+
+.prompt .prompt-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -15em;
+    margin-top: -5em;
+    width: 20em;
+    padding: 1em;
+    background: Window;
+    text-align: center;
+    box-shadow: 0 0.5em 2em #888;
+    border-radius: 0.5em;
+}
+
+.prompt .prompt-dialog input[type='button'],
+.prompt .prompt-dialog input[type='submit'],
+.prompt .prompt-dialog button {
+    min-width: 5em;
+    margin: 0.5em
+}
+
+
+
+/* Message bar */
+
+.alert-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    width: 100%;
+    text-align: center;
+}
+
+.alert-bar .alert-bar-text {
+    margin: auto 0;
+    display: inline-block;
+    padding: 0.5em;
+    /*color: black;*/
+    background-color: #ffa;
+    border: 1px #cc4 solid;
+}
+
+.alert-bar .button-close {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    text-align: center;
+    vertical-align: middle;
+}

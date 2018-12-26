@@ -1,0 +1,353 @@
+def create_test
+  a1   = AttributeDictionary.new("a1")
+  a2   = AttributeDictionary.new("a2")
+  a3   = AttributeDictionary.new("a3")
+  a11  = AttributeDictionary.new("a11")
+  a12  = AttributeDictionary.new("a12")
+  a121 = AttributeDictionary.new("a121")
+  a122 = AttributeDictionary.new("a122")
+  a31  = AttributeDictionary.new("a31")
+  a32  = AttributeDictionary.new("a32")
+  e1 = AttributeDictionary.new("entity1")
+  e1.add_dictionary(a1,a2,a3)
+  a1.add_dictionary(a11,a12)
+  a12.add_dictionary(a121,a122)
+  a3.add_dictionary(a31,a32)
+  a1   = AttributeDictionary.new("a1")
+  a2   = AttributeDictionary.new("a2")
+  a4   = AttributeDictionary.new("a4")
+  a11  = AttributeDictionary.new("a11")
+  a12  = AttributeDictionary.new("a12")
+  a121 = AttributeDictionary.new("a121")
+  a123 = AttributeDictionary.new("a123")
+  a21  = AttributeDictionary.new("a21")
+  a41  = AttributeDictionary.new("a41")
+  e2 = AttributeDictionary.new("entity2")
+  e2.add_dictionary(a1,a2,a4)
+  a1.add_dictionary(a11,a12)
+  a12.add_dictionary(a121,a123)
+  a2.add_dictionary(a21)
+  a4.add_dictionary(a41)
+  return e1, e2
+end
+
+=begin
+def create_test
+  a1   = AttributeDictionary.new("a1")
+  a2   = AttributeDictionary.new("a2")
+  a3   = AttributeDictionary.new("a3")
+  e1 = AttributeDictionary.new("entity1")
+  e1.add_dictionary(a1,a2,a3)
+  a1   = AttributeDictionary.new("a1")
+  a3   = AttributeDictionary.new("a3")
+  e2 = AttributeDictionary.new("entity2")
+  e2.add_dictionary(a1,a3)
+  a1   = AttributeDictionary.new("a1")
+  a2   = AttributeDictionary.new("a2")
+  a4   = AttributeDictionary.new("a4")
+  e3 = AttributeDictionary.new("entity3")
+  e3.add_dictionary(a1,a2,a4)
+  return e1, e2, e3
+end
+=end
+
+class AttributeDictionary
+  def initialize(name)
+    @name = name
+    @attribute_dictionaries = nil
+  end
+  attr_accessor :attribute_dictionaries, :name
+  def add_dictionary(*ds)
+    @attribute_dictionaries ||= AttributeDictionaries.new
+    ds.each{ |d|
+      @attribute_dictionaries[d.name] = d
+    }
+  end
+  def inspect
+    "<#{@name}>"
+  end
+  alias_method :to_s, :inspect
+end
+
+class AttributeDictionaries
+  def initialize
+    @a = {}
+  end
+  def [](n)
+    return @a[n]
+  end
+  def []=(n,v)
+    @a[n] = v
+  end
+  def map(&block)
+    @a.values.map(&block)
+  end
+  def each(&block)
+    @a.values.each(&block)
+  end
+  def to_a
+    @a.values
+  end
+  def inspect
+    "<as[#{@a.keys.join(",")}]>"
+  end
+  alias_method :to_s, :inspect
+  def method_missing(m, *args)
+    @a.__send__(m, *args)
+  end
+end
+
+
+def get_not_common_dictionaries(*entities)
+  entities.flatten!
+  attribute_dictionarieses = entities.map{ |e| e.attribute_dictionaries}
+  intersections, complements = compare_dictionaries(*attribute_dictionarieses)
+  return complements
+end
+
+
+def compare_dictionaries(*attribute_dictionarieses)
+  contains_nil = attribute_dictionarieses.include?(nil)
+  attribute_dictionarieses.compact!
+  intersection_dictionaries = {}
+  complement_dictionaries = {}
+
+  name_arrays = attribute_dictionarieses.map{ |dictionaries| dictionaries.map{ |d| d.name } }
+  union       = name_arrays.flatten.uniq
+  #union      = name_arrays.inject(name_arrays.first){ |u, a| u | a }
+
+  if contains_nil
+    union.each{ |name| complement_dictionaries[name] = true }
+    return intersection_dictionaries, complement_dictionaries
+  end
+
+  intersection = name_arrays.inject(name_arrays.first){ |s, a| s & a }
+  complement   = union - intersection
+
+  intersection.each{ |name|
+    as = attribute_dictionarieses.map{ |dictionaries| dictionaries[name].attribute_dictionaries }
+    if as.compact.length == 0
+      intersection_dictionaries[name] = true
+    else
+      intersections, complements = compare_dictionaries(*as)
+      intersection_dictionaries[name] = (intersections.empty?) ? true : intersections
+      complement_dictionaries[name]   = complements unless complements.empty?
+    end
+  }
+  
+  complement.each{ |name|
+    complement_dictionaries[name] = true
+  }
+  
+  return intersection_dictionaries, complement_dictionaries
+end
+private :compare_dictionaries
+
+
+def get_all_dictionaries(*entities)
+  entities.flatten!
+  attribute_dictionarieses = entities.map{ |e| e.attribute_dictionaries}
+  return join_dictionaries(*attribute_dictionarieses)
+end
+
+
+def join_dictionaries(*attribute_dictionarieses)
+  attribute_dictionarieses.compact!
+  union_dictionaries = {}
+
+  name_arrays = attribute_dictionarieses.map{ |dictionaries| dictionaries.map{ |d| d.name } }
+  union       = name_arrays.flatten.uniq
+
+  union.each{ |name|
+    as = attribute_dictionarieses.map{ |dictionaries| dictionaries[name] }.compact.map{ |dictionary| dictionary.attribute_dictionaries }
+    union_dictionaries[name] = join_dictionaries(*as)
+  }
+  return union_dictionaries
+end
+private :join_dictionaries
+
+
+=begin
+def compare_dictionaries(*attribute_dictionarieses)
+  intersection_dictionaries = {}
+  complement_dictionaries = {}
+  
+  name_arrays = attribute_dictionarieses.map{ |dictionaries| dictionaries.map{ |d| d.name } }
+  union        = name_arrays.flatten.uniq
+  #union       = name_arrays.inject(name_arrays.first){ |u, a| u | a }
+  intersection = name_arrays.inject(name_arrays.first){ |s, a| s & a }
+  complement   = union - intersection
+  
+  intersection.each{ |name|
+    as = attribute_dictionarieses.map{ |dictionaries| dictionaries[name].attribute_dictionaries }.compact
+    if as.length == 0
+      intersection_dictionaries[name] = true
+    elsif as.length == attribute_dictionarieses.length
+      intersections, complements = compare_dictionaries(*as)
+      intersection_dictionaries[name] = (intersections.empty?) ? true : intersections
+      complement_dictionaries[name]   = complements unless complements.empty?
+    else
+      intersection_dictionaries[name] = true
+      complements = {}
+      complement2 = as.map{ |dictionaries| dictionaries.map{ |d| d.name } }.flatten.uniq
+      complement2.each{ |name| complements[name] = true }
+      complement_dictionaries[name] = complements
+    end
+  }
+  
+  complement.each{ |name|
+    complement_dictionaries[name] = true
+  }
+  
+  return intersection_dictionaries, complement_dictionaries
+end
+private :compare_dictionaries
+=end
+
+
+
+
+
+=begin
+# Compare only keys/nodes, not subtrees.
+
+def tree_union(trees)
+  union = {}
+  keys = trees.map{ |tree| tree.keys }.flatten.uniq
+  keys.each{ |key|
+    union[key] = tree_union(trees.select{ |tree| tree[key].is_a?(Hash) })
+  }
+  return union
+end
+
+def tree_intersection(trees)
+  intersection = {}
+  keys = trees.map{ |tree| tree.keys }.flatten.uniq
+  keys.each{ |key|
+    unless trees.find{ |tree| not tree.include?(key) }
+      intersection[key] = tree_intersection(trees.map{ |tree| tree[key] })
+    end
+  }
+  return intersection
+end
+
+# Only leaf nodes of the resulting data structure are member of the exclusion.
+def tree_exclusion(trees)
+  #tree_union - tree_intersection
+  exclusion = {}
+  keys = trees.map{ |tree| tree.keys }.flatten.uniq
+  keys.each{ |key|
+    # Add keys as leaves if they are not shareded by all trees.
+    if trees.find{ |tree| not tree.include?(key) }
+      intersection[key] = true #tree_union(trees.map{ |tree| tree[key] })
+    # Only if subtrees contain keys that are not shared by all trees:
+    # Add keys as navigation nodes.
+    else
+      ex = tree_exclusion(trees.map{ |tree| tree[key] })
+      intersection[key] = ex unless ex.empty?
+    end
+  }
+  return exclusion
+end
+
+=end
+
+
+
+# For several trees of nested attribute dictionaries, get the united tree.
+# @param [Array<Sketchup::AttributeDictionaries>] attribute_dictionarieses
+# @return [Hash<String,Hash>]
+def tree_union(attribute_dictionarieses)
+  # Empty attribute_dictionaries are nil, so we should not try to iterate over them.
+  attribute_dictionarieses.compact!
+  union = {}
+  # Get all node names.
+  names = attribute_dictionarieses.map{ |attribute_dictionaries|
+    attribute_dictionaries.map{ |attribute_dictionary| attribute_dictionary.name }
+  }.flatten.uniq
+  # For each, collect the union of all subtrees.
+  names.each{ |name|
+    union[name] = tree_union(attribute_dictionarieses.map{ |attribute_dictionaries|
+      # If the attribute_dictionary of the given name contains further nested attribute_dictionaries, collect them.
+      attribute_dictionaries[name] && attribute_dictionaries[name].attribute_dictionaries
+    }.compact)
+  }
+  return union
+end
+
+
+# For several trees of nested attribute dictionaries, get only the common trees.
+# @param [Array<Sketchup::AttributeDictionaries>] attribute_dictionarieses
+# @return [Hash<String,Hash>]
+def tree_intersection(attribute_dictionarieses)
+  # Empty attribute_dictionaries are nil, so we should not try to iterate over them.
+  attribute_dictionarieses.compact!
+  intersection = {}
+  # Get all node names.
+  names = attribute_dictionarieses.map{ |attribute_dictionaries|
+    attribute_dictionaries.map{ |attribute_dictionary| attribute_dictionary.name }
+  }.flatten.uniq
+  # For each, collect the intersection of all subtrees.
+  names.each{ |name|
+    # Only if an attribute_dictionary of the given name is contained in all attribute_dictionaries collections.
+    unless attribute_dictionarieses.find{ |attribute_dictionaries| not attribute_dictionarieses[name] }
+      # Then add the name and check if there are the common nested attribute_dictionaries
+      intersection[name] = tree_intersection(attribute_dictionarieses.map{ |attribute_dictionaries|
+        # attribute_dictionaries[name] && attribute_dictionarieses[name].attribute_dictionaries
+        attribute_dictionaries[name].attribute_dictionaries
+      }.compact)
+    end
+  }
+  return intersection
+end
+
+
+# Only leaf nodes of the resulting data structure are member of the exclusion.
+
+# For several trees of nested attribute dictionaries, get only those nodes that 
+# are not common by all trees.
+# @param [Array<Sketchup::AttributeDictionaries>] attribute_dictionarieses
+# @return [Hash<String,TrueClass>]
+def tree_exclusion(attribute_dictionarieses)
+  # If there are empty attribute_dictionaries = nil, all other attribute_dictionaries are part of the exclusion.
+  contains_nil = attribute_dictionarieses.include?(nil)
+  attribute_dictionarieses.compact!
+  exclusion = {}
+  # Get all node names.
+  names = attribute_dictionarieses.map{ |attribute_dictionaries|
+    attribute_dictionaries.map{ |attribute_dictionary| attribute_dictionary.name }
+  }.flatten.uniq
+  #
+  return Hash[names.map{|n| [n, true] }] if contains_nil
+  # For each, collect the exclusion of all subtrees.
+  names.each{ |name|
+    # Add names as leaves if they are not shareded by all trees.
+    if attribute_dictionarieses.find{ |attribute_dictionaries| not (attribute_dictionaries.include?(name)) }
+      exclusion[name] = true
+    else
+      nested_attribute_dictionarieses = attribute_dictionarieses.map{ |attribute_dictionaries|
+        attribute_dictionaries[name].attribute_dictionaries
+      }
+      # Only if subtrees contain names that are not shared by all trees:
+      # Add names as navigation nodes.
+      unless nested_attribute_dictionarieses.all?{ |attribute_dictionaries| attribute_dictionaries.nil? }
+        exclusion[name] = tree_exclusion(nested_attribute_dictionarieses)
+      end
+    end
+  }
+  return exclusion
+end
+
+
+def get_all_dictionaries(*entities)
+  entities.flatten!
+  attribute_dictionarieses = entities.map{ |e| e.attribute_dictionaries}
+  return tree_union(attribute_dictionarieses)
+end
+
+
+def get_not_common_dictionaries(*entities)
+  entities.flatten!
+  attribute_dictionarieses = entities.map{ |e| e.attribute_dictionaries}
+  return tree_exclusion(attribute_dictionarieses)
+end
