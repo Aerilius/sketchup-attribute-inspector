@@ -1,0 +1,144 @@
+// Extension Metadata
+"Attribute Inspector"="属性检查器";
+"A viewer for entity and model attributes"="实体和模型属性的查看器";
+"Select an entity to view and edit its attribute dictionaries."="选择要查看和编辑其属性字典的实体。";
+
+// Types
+"String"="弦";
+"Integer"="整数";
+"Float"="浮点数";
+"Length"="长度";
+"Array"="表";
+"Boolean"="布尔值";
+"NilClass"="空值";
+"Geom::Point3d"="点";
+"Geom::Vector3d"="矢量";
+"Sketchup::Color"="颜色";
+"Time"="时间";
+"JSON"="JSON";
+
+// General
+"dictionary"="字典";
+"attribute"="属性";
+"value"="价值";
+"type"="类型";
+
+// Operation names (for example in Undo)
+"Add attribute dictionary \"%0\""="添加属性字典“%0”";
+"Rename attribute dictionary \"%0\" to \"%1\""="将属性字典“%0”重命名为“%1”";
+"Remove attribute dictionary \"%0\""="删除属性字典“%0”";
+"Set attribute \"%0\" to \"%1\""="将属性“%0”设置为“%1”";
+"Rename attribute \"%0\" to \"%1\""="将属性“%0”重命名为“%1”";
+"Remove attribute \"%0\""="删除属性“%0”";
+
+// Error messages
+"Attribute \"%0\" could not be renamed into \"%1\""="无法将属性“%0”重命名为“%1”";
+"\"%0\" is not a valid %1"="“0”不是有效的%1";
+
+// Button titles
+"Add a new dictionary"="添加新词典";
+"Add a nested dictionary"="添加嵌套字典";
+"Rename the selected dictionary"="重命名所选词典";
+"Remove the selected dictionary"="删除所选词典";
+"Add a new attribute"="添加新属性";
+"Remove the selected attribute"="删除所选属性";
+
+// Default texts
+"No entities selected"="未选择任何实体";
+"No attribute dictionaries"="此实体还没有任何属性字典。";
+"No attribute dictionaries (2)"="这些实体还没有任何属性字典。";
+"No attributes"="这本词典还没有任何属性。";
+
+// Entity types
+"How to select other entity types"="要查看其他实体类型的属性，请选择下面的选项，然后使用“材质浏览器”选择一种材质，使用“图层管理器”选择一个图层（单选框），或使用“场景管理器”选择一个场景（双击）。";
+"drawing elements"="绘图元素 ";
+"component definitions"="个组件定义";
+"materials"="个材质";
+"layers"="个图层";
+"scenes"="个场景";
+"styles"="个样式";
+"Drawingelement"="绘图元素 ";
+"ComponentDefinition"="个组件定义";
+"Material"="个材质";
+"Layer"="个图层";
+"Page"="个场景";
+"Style"="个样式";
+
+// WebDialog prompt
+"Choose a dictionary name:"="选择词典名称：";
+"Ok"="好啊";
+"Abort"="中止";
+
+// Other WebDialog texts
+"When you change a grayed out value that is not shared by all selected entities, it will be added to all selected entities."="当您更改不是由所有选定实体共享的灰色值时，它将添加到所有选定实体。";
+"Allow editing grayed values"="允许编辑灰色值";
+"JSON Tree"="JSON树";
+"JSON Source"="JSON源程序";
+"A dictionary with the same name already exists. Please choose a different name."="同名词典已存在。请选择其他名称。";
+
+// Quotes
+"\"%0\""="“%0”";
+
+// Title
+"No entity selected"="未选择任何实体";
+"entities"="实体";
+"see also: "="参见：";
+"currently selected %0"="当前选定的%0";
+
+// Names of entity types
+"Model"="模型";
+"ArcCurve"="圆弧";
+"ArcCurves"="个圆弧";
+"Circle"="圆圈";
+"Circles"="个圆圈";
+"Curve"="条曲线";
+"Curves"="几个条曲线";
+"Edge"="边线";
+"Edges"="个条边线";
+"Face"="平面";
+"Faces"="个平面";
+"Group"="组";
+"Groups"="个组";
+"ComponentInstance"="组件实例";
+"ComponentInstances"="个组件实例";
+"ComponentDefinition"="组件定义";
+"ComponentDefinitions"="个组件定义";
+"Image"="图片";
+"Images"="个图片";
+"Text"="文字";
+"Texts"="个文字";
+"ConstructionLine"="参考线";
+"ConstructionLine"="个参考线";
+"ConstructionPoint"="辅助点";
+"ConstructionPoints"="个辅助点";
+"DimensionLinear"="线性尺寸";
+"DimensionLinears"="个线性尺寸";
+"SectionPlane"="剖切面";
+"SectionPlanes"="个剖切面";
+"Material"="材质";
+"Materials"="个材质";
+"Layer"="图层";
+"Layers"="个图层";
+"ViewPage"="场景";
+"ViewPages"="个场景";
+"Texture"="纹理";
+"Textures"="个纹理";
+"Loop"="循环";
+"Loops"="个循环";
+"EdgeUse"="边线使用";
+"EdgeUses"="个边线使用";
+"ComponentBehavior"="组件行为";
+"ComponentBehaviors"="个组件行为";
+"AttributeDictionary"="字典";
+"AttributeDictionarys"="个字典";
+"SkpStyle"="样式";
+"SkpStyles"="个样式";
+
+// Names of lists objects
+"AttributeDictionaries"="个字典"
+"MaterialManager"="材质列表";
+"LayerManager"="图层列表";
+"PageList"="场景列表";
+"RenderingOptions"="渲染选项";
+"ShadowInfo"="阴影信息";
+"SkpStyleManager"="样式列表";

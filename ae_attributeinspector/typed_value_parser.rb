@@ -14,12 +14,13 @@ module TypedValueParser
 
 
 unless defined?(self::COMMA)
+  self::Integer = (defined?(::Integer)) ? ::Integer : ::Fixnum
   comma     = /,\s*/
   #float     = /[+-]?\d+\.(?:\d+(?:e[+-]\d+)?)?/
   float     = /[-+]?\d+(?:\.\d+(?:e[+-]\d+)?)?/
-  #fixnum    = /[-]?\d+(?=[^\.])/
-  fixnum    = /[-]?\d+/
-  posfixnum = /\d+/
+  #integer    = /[-]?\d+(?=[^\.])/
+  integer    = /[-]?\d+/
+  posinteger = /\d+/
   length    = /#{float}(?:mm|cm|m|\"|\')/ # TODO: support length in Vector3d and Point3d
   COMMA     = /^,?\s*/
   NIL       = /^nil/
@@ -29,25 +30,43 @@ unless defined?(self::COMMA)
   LENGTH    = /^#{float}(?:mm|cm|m|\"|\')/
   #FLOAT     = /^[-]?\d+\.(?:\d+(?:e[+-]\d+)?)?/
   FLOAT     = /^#{float}/
-  #FIXNUM    = /^[-]?\d+(?=[^\.])/
-  FIXNUM    = /^#{fixnum}/
+  #INTEGER    = /^[-]?\d+(?=[^\.])/
+  INTEGER    = /^#{integer}/
   STRING    = /^"((?:[^"]|\\")*)"/
-  COLOR     = /^Color\((#{posfixnum})#{comma}(#{posfixnum})#{comma}(#{posfixnum})(?:#{comma}(#{posfixnum}))?\)/
+  COLOR     = /^Color\((#{posinteger})#{comma}(#{posinteger})#{comma}(#{posinteger})(?:#{comma}(#{posinteger}))?\)/
   POINT3D   = /^Point3d\((#{float})#{comma}(#{float})#{comma}(#{float})\)/
   #VECTOR3D  = /^Vector3d\((#{float})#{comma}(#{float})#{comma}(#{float})\)/
   VECTOR3D  = /^Vector3d\((?:(#{float})#{comma}){2}(#{float})\)/
   FLOAT_3TUPLE  = /^\s*?[\(\[]?(#{float})#{comma}(#{float})#{comma}(#{float})[\)\]]?\s*?$/
-  COLOR_34TUPLE = /^\s*?[\(\[]?(#{posfixnum})#{comma}(#{posfixnum})#{comma}(#{posfixnum})(?:#{comma}(#{posfixnum}))?[\)\]]?\s*?$/
+  COLOR_34TUPLE = /^\s*?[\(\[]?(#{posinteger})#{comma}(#{posinteger})#{comma}(#{posinteger})(?:#{comma}(#{posinteger}))?[\)\]]?\s*?$/
   #TIME     = /^Time\((#{float})\)/
   SQUARE_BRACKET_START = /^\[/
   SQUARE_BRACKET_END   = /^\]?/
 end
 
 
+def self.determine_type_string(value)
+  if value.is_a?(String) && value[/^[\{\[]/]
+    begin
+      JSON.parse(value)
+      return 'String'
+    rescue JSON::ParserError
+      return value.class.to_s
+    end
+  elsif value.is_a?(TrueClass) || value.is_a?(FalseClass)
+    return 'Boolean'
+  elsif value.is_a?(self::Integer)
+    return 'Integer'
+  else
+    return value.class.to_s
+  end
+end
+
+
 # Parses a string of this plugin's internal representation of typed values into Ruby objects.
 # @param [String] string
 # @param [Class,String] type
-# @return [String,Boolean,NilClass,Float,Fixnum,Length,Sketchup::Color,Geom::Point3d,Geom::Vector3d,Time,Array]
+# @return [String,Boolean,NilClass,Float,Integer,Length,Sketchup::Color,Geom::Point3d,Geom::Vector3d,Time,Array]
 # @raises [SyntaxError]
 def self.parse(string, type=nil)
   klass = get_class(type) if type.is_a?(String) rescue nil # otherwise type will be determined by parser_implementation
@@ -55,17 +74,17 @@ def self.parse(string, type=nil)
   # Some type-specific switches:
   # Strings without escaping or quotes; 
   #    when nested in an array, escaping and quotes are required.
-  # Fixnums, Floats:
+  # Integers, Floats:
   #   when nested in an array, floats must always have a decimal point to 
-  #   distinguish them from fixnums.
+  #   distinguish them from integers.
   # Colors, points, vectors:
   #   can be written as comma-separated numbers; 
   #   when nested in an array, they must always be wrapped in 
   #     Color(128,128,128,255), Point3d(1,0,0), Vector3d(1,0,0) etc.
   when klass == String then string
-  when klass == Fixnum
+  when klass == self::Integer
     # Match against a regular expression, if not match then raise syntax error.
-    string[FIXNUM] || raiseSyntaxError(string, type)
+    string[INTEGER] || raiseSyntaxError(string, type)
     $&.to_i
   when klass == Float
     string[FLOAT] || raiseSyntaxError(string, type)
@@ -94,7 +113,7 @@ end
 
 
 # Converts typed attribute values into a string of this plugin's internal representation of typed values.
-# @param [String,Boolean,NilClass,Float,Fixnum,Length,Sketchup::Color,Geom::Point3d,Geom::Vector3d,Time,Array] object
+# @param [String,Boolean,NilClass,Float,Integer,Length,Sketchup::Color,Geom::Point3d,Geom::Vector3d,Time,Array] object
 # @return [String]
 def self.stringify(object)
   return (object.is_a?(String)) ? object : stringify_implementation(object)
@@ -119,7 +138,7 @@ class << self
 
   # Parses a string of this plugin's internal representation of typed values into Ruby objects.
   # @param [String] string
-  # @return [String,Boolean,NilClass,Float,Fixnum,Length,Sketchup::Color,Geom::Point3d,Geom::Vector3d,Time,Array]
+  # @return [String,Boolean,NilClass,Float,Integer,Length,Sketchup::Color,Geom::Point3d,Geom::Vector3d,Time,Array]
   # @private
   # @raises [SyntaxError]
   def parse_implementation(string, type=nil)
@@ -141,8 +160,8 @@ class << self
     when FLOAT
       raiseSyntaxError(string, type) if type && type != 'Float'
       return $&.to_f
-    when FIXNUM
-      raiseSyntaxError(string, type) if type && type != 'Fixnum'
+    when INTEGER
+      raiseSyntaxError(string, type) if type && type != 'Integer'
       return $&.to_i
     when STRING
       raiseSyntaxError(string, type) if type && type != 'String'
@@ -173,7 +192,7 @@ class << self
 
 
   # Converts typed attribute values into a string of this plugin's internal representation of typed values.
-  # @param [String,Boolean,NilClass,Float,Fixnum,Length,Sketchup::Color,Geom::Point3d,Geom::Vector3d,Time,Array] object
+  # @param [String,Boolean,NilClass,Float,Integer,Length,Sketchup::Color,Geom::Point3d,Geom::Vector3d,Time,Array] object
   # @return [String]
   # @private
   def stringify_implementation(object)
@@ -191,7 +210,7 @@ class << self
         "Vector3d(#{object.to_a.map{ |c| c.to_f }.join(", ")})"
       when Array
         "[#{object.map{ |a| stringify_implementation(a) }.join(", ")}]"
-      # Boolean, Nil, Length, Float, Fixnum
+      # Boolean, Nil, Length, Float, Integer
       else object.to_s
       end
   end

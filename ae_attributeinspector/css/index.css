@@ -33,12 +33,12 @@ select {
     min-height: 1.2em;
     vertical-align: middle;
     font: message-box; /* use system font */
-    font-size: 100% !important; /* This overrides the font-size contained in the system font if it does not follow dpi settings. */
+    font-size: inherit;
 }
 
 textarea {
     font: message-box; /* use system font */
-    font-size: 100% !important; /* This overrides the font-size contained in the system font if it does not follow dpi settings. */
+    font-size: inherit;
 }
 
 input[type=button] {
@@ -57,6 +57,10 @@ input[type=number] {
     text-align: right;
     width: 2.5em;
     padding-right: .5em;
+}
+
+table {
+  font-size: inherit; /* This overrides browser style. */
 }
 
 /*button {
@@ -132,36 +136,6 @@ textarea.editable {
 /* AttributeInspector UI elements */
 
 
-
-/* Grid: Top toolbar and two panes */
-
-.top-toolbar {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 2.5em;
-    overflow: hidden;
-}
-
-#dictionary-pane,
-#attributes-pane {
-    position: absolute;
-    top: 2.5em; /* top toolbar */
-    bottom: 0;
-    margin-top: 1px;
-}
-
-#dictionary-pane {
-    left: 0;
-    width: 33%;
-}
-
-#attributes-pane {
-    right: 0;
-    width: 67%;
-}
-
 /* Invisible divider to resize the panes */
 
 .divider-vertical {
@@ -182,8 +156,8 @@ textarea.editable {
 
 /* Content areas of left/right pane */
 
-#dictionary-list,
-#attributes-list {
+.dictionary-list,
+.attribute-table {
     position: absolute;
     top: 0;
     bottom: 2.5em; /* bottom toolbar */
@@ -192,7 +166,7 @@ textarea.editable {
     border: 1px ThreeDShadow solid;
 }
 
-#dictionary-list {
+.dictionary-list {
     background: white;
     border-left: none;
     border-right: none;
@@ -201,7 +175,7 @@ textarea.editable {
     padding: 1em 0;
 }
 
-#attributes-list {
+.attribute-table {
     border-right: none;
     overflow-x: hidden;
     overflow-y: auto;
@@ -284,11 +258,10 @@ textarea.editable {
 
 /* Table */
 
-.attribute-table {
+.attribute-table table {
     background: white;
     border-collapse: collapse;
-    bottom: 2em;
-    width: 100%;
+    overflow: hidden;
 }
 
 .attribute-table th {
@@ -315,7 +288,7 @@ textarea.editable {
 
 .attribute-table td .editable {
     background: transparent;
-    color: inherit;
+    color: initial;
     border: none;
 }
 
@@ -333,11 +306,12 @@ textarea.editable {
 
 
 
-.grayed,
-.grayed .editable {
-    color: lightgray;
+.grayed, .grayed.editable {
+    color: #aaaaaa !important;
 }
-
+.grayed.editable:focus {
+    color: initial !important;
+}
 
 
 /* Buttons */
@@ -380,6 +354,7 @@ textarea.editable {
     position: relative;
     top: 1px;
     right: 1px;
+    -moz-appearance: none;
 }
 .overlay-toolbar button:not(:hover) {
     background: transparent;
@@ -402,43 +377,6 @@ textarea.editable {
     text-overflow: ellipsis;
     word-break: break-word;
 }
-
-
-
-/* Prompt */
-
-.prompt.prompt-background {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 1000;
-    width: 100%;
-    height: 100%;
-    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAAXNSR0IArs4c6QAAAAZiS0dEAP8A/wD/oL2nkwAAAAlwSFlzAAALEwAACxMBAJqcGAAAAA1JREFUCNdjCAkJqQcAA3gBfJ4UYBwAAAAASUVORK5CYII=);
-    background: rgba(64, 64, 64, 0.25);
-}
-
-.prompt .prompt-dialog {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    margin-left: -15em;
-    margin-top: -5em;
-    width: 20em;
-    padding: 1em;
-    background: Window;
-    text-align: center;
-    box-shadow: 0 0.5em 2em #888;
-    border-radius: 0.5em;
-}
-
-.prompt .prompt-dialog input[type='button'],
-.prompt .prompt-dialog input[type='submit'],
-.prompt .prompt-dialog button {
-    min-width: 5em;
-    margin: 0.5em
-}
-
 
 
 /* Message bar */
@@ -466,5 +404,6 @@ textarea.editable {
     width: 1em;
     height: 1em;
     text-align: center;
-    vertical-align: middle;
+    margin-left: 0.5em;
+    cursor: pointer;
 }

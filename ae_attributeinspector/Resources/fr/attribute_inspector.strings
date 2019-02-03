@@ -15,6 +15,7 @@
 "Geom::Vector3d"="Vecteur";
 "Sketchup::Color"="Couleur";
 "Time"="Temps";
+"JSON"="JSON";
 
 // General
 "dictionary"="dictionnaire";
@@ -43,12 +44,12 @@
 "Remove the selected attribute"="Enlever l'attribut sélectionné";
 
 // Default texts
-"This entity has not yet any dictionaries."="Cette entité n'a pas des dictionnaires.";
-"These entities have not yet any dictionaries."="Cettes entités n'ont pas des dictionnaires.";
-"This dictionary has not yet any attributes."="Ce dictionnaire n'a pas des attributs.";
+"No entities selected"="Aucune entité sélectionée";
+"No attribute dictionaries"="Cette entité n'a pas des dictionnaires.";
+"No attribute dictionaries (2)"="Cettes entités n'ont pas des dictionnaires.";
+"No attributes"="Ce dictionnaire n'a pas des attributs.";
 
 // Entity types
-"inspect currently selected"="inspecter la sélection actuelle de";
 "How to select other entity types"="Pour voir d'autres types d'entités, sélectionne l'option si-dessous et utilise le navigateur de matérieaux pour sélectionner un matérial, le navigateur des calques pour sélectionner une calque (bouton radio) ou le navigateur des scènes pour sélectionner un scène (double-click).";
 "drawing elements"="éléments de dessin";
 "component definitions"="définitions de composant";
@@ -56,12 +57,12 @@
 "layers"="calques";
 "scenes"="scènes";
 "styles"="styles";
-"DRAWING_ELEMENTS"="éléments de dessin";
-"DEFINTIONS"="définitions de composant";
-"MATERIALS"="matérieaux";
-"LAYERS"="calques";
-"PAGES"="scènes";
-"STYLES"="styles";
+"Drawingelement"="éléments de dessin";
+"ComponentDefinition"="définitions de composant";
+"Material"="matérieaux";
+"Layer"="calques";
+"Page"="scènes";
+"Style"="styles";
 
 // WebDialog prompt
 "Choose a dictionary name:"="Choisissez un nom de dictionnaire :";
@@ -71,6 +72,9 @@
 // Other WebDialog texts
 "When you change a grayed out value that is not shared by all selected entities, it will be added to all selected entities."="Si une valeur grisée est changée, qui n'est pas partagée parmi toutes les entités sélectionnées, elle sera ajoutée à toutes les entités sélectionnées.";
 "Allow editing grayed values"="Permets de changer des valeurs grisées";
+"JSON Tree"="Arbre JSON";
+"JSON Source"="Source JSON";
+"A dictionary with the same name already exists. Please choose a different name."="Un dictionnaire portant le même nom existe déjà. Veuillez choisir un autre nom.";
 
 // Quotes
 "\"%0\""="«%0»";
@@ -79,8 +83,7 @@
 "No entity selected"="Rien sélectionné";
 "entities"="entités";
 "see also: "="vois aussi : ";
-"see also: %0"="vois aussi : %0";
-"currently selected %0"="%0 séléctionné(e) en ce moment";
+"currently selected %0"="%0 sélectionné(e) en ce moment";
 
 // Names of entity types
 "Model"="modèle";

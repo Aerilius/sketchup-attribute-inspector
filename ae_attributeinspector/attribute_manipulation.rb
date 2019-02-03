@@ -1,4 +1,5 @@
 require 'sketchup.rb'
+require 'json'
 
 
 module AE
@@ -22,11 +23,14 @@ module AE
           # @return [Hash] Hash of dictionaries in the form of:
           #  { 'dictionary_name' => { 'nested_dictionary_name' => nil } }
           def get_dictionaries(entity)
-            dictionaries = {}
+            dictionaries = []
             dicts = entity.attribute_dictionaries
             if dicts
               dicts.each{ |dict|
-                dictionaries[dict.name] = (dict.attribute_dictionaries) ? get_dictionaries(dict) : nil
+                dictionaries << {
+                  :name => dict.name,
+                  :children => (dict.attribute_dictionaries) ? get_dictionaries(dict) : []
+                }
               }
               # TODO: Not only is AttributeDictionary an Entity and can have attribute dictionaries,
               # but also the AttributeDictionaries collection is an entity. This adds a second dimension for the hierarchy.
@@ -50,16 +54,14 @@ module AE
           #    }
           #  }
           def get_attributes(entity, path)
-            result = {}
+            result = []
             dictionary = find_dictionary(entity, path)
             return warn("AttributeInspector: dictionary `#{path.inspect}` not found for entity #{entity}") unless dictionary
             dictionary.each_pair{ |key, value|
-              type = (value.is_a?(TrueClass) || value.is_a?(FalseClass)) ? 'Boolean' : value.class.to_s
-              result[key] = {
-                # :grayed => false,
-                # :grayed_value => false,
+              result << {
+                :key => key,
                 :value => TypedValueParser.stringify(value),
-                :type => type
+                :type => TypedValueParser.determine_type_string(value)
               }
             }
             return result
@@ -71,28 +73,19 @@ module AE
 
           # Reads all nested dictionary names of multiple entities into a nested hash.
           # @param [Array<Sketchup::Entity>] entities
-          # @return [Hash] Hash of dictionaries in the form of:
-          #  { 'dictionary_name' => { 'nested_dictionary_name' => nil } }
+          # @return [Array<Hash>] Array of dictionaries in the form of:
+          #  [
+          #    {
+          #      :name => 'dictionary_name',
+          #      :children => [...],
+          #      :nonCommonDictionary => Boolean
+          #    },
+          #    ...
+          #  ]
           def get_all_dictionaries(*entities)
             entities.flatten!
-            attribute_dictionarieses = entities.map{ |e| e.attribute_dictionaries}
-            return tree_union(attribute_dictionarieses)
-          end
-
-
-          # Reads those attributes of the requested dictionary that are not contained in all entities.
-          # @param [Array<Sketchup::Entity>] entities
-          # @return [Hash] Hash of attributes in the form of:
-          #  {
-          #    'attribute_name' => {
-          #      :value => value,
-          #      :type  => "#{value.class.name}"
-          #    }
-          #  }
-          def get_not_common_dictionaries(*entities)
-            entities.flatten!
-            attribute_dictionarieses = entities.map{ |e| e.attribute_dictionaries}
-            return tree_exclusion(attribute_dictionarieses)
+            attribute_dictionaries_list = entities.map{ |e| e.attribute_dictionaries }
+            return merge_dictionaries(attribute_dictionaries_list)
           end
 
 
@@ -101,33 +94,35 @@ module AE
           # @param [Array<Sketchup::Entity>] entities
           # @param [Array<String>] path - The path of the dictionary.
           # @returns [Hash] Hash of attributes in the form of:
-          #  {
-          #    'attribute_name' => {
+          #  [
+          #    {
+          #      :key => 'attribute_name',
           #      :value => String,
           #      :type => "#{value.class.name}",
-          #      :non_common_attribute => true|false,
-          #      :non_common_value => true|false
-          #    }
-          # }
+          #      :nonCommonAttribute => Boolean,
+          #      :nonCommonValue => Boolean
+          #    },
+          #    ...
+          #  ]
           def get_all_attributes(entities, path)
-            result = {}
             count = 0
             # Collect all attributes and values of all entities.
+            values = {}
             entities.each{ |entity|
               dictionary = find_dictionary(entity, path)
               next unless dictionary
-              count += 1
+              count += 1 # FIXME: one line above, because if an entity does not have this dictionary, this attribute is nonCommonKey?
               # Merge the attributes.
               dictionary.each{ |key, value|
-                result[key] ||= { :value => [] }
-                result[key][:value] << value
+                values[key] ||= []
+                values[key] << value
               }
             }
             # Merge all values for the same attribute.
-            result.each_value{ |metadata|
-              # The collected values in an array.
-              values = metadata[:value]
+            result = values.map{ |key, values|
               value = nil
+              non_common_value = false
+              non_common_key = false
               # Determine the value.
               # Shared attribute, contained in every dictionary/entity.
               if values.length == count
@@ -137,15 +132,20 @@ module AE
                 # Different values: Decide for most common value.
                 else
                   value = most_common(values)
-                  metadata[:non_common_value] = true
+                  non_common_value = true
                 end
               # Non-shared attribute, contained in only some dictionaries/entities.
               else
                 value = most_common(values)
-                metadata[:non_common_attribute] = true
+                non_common_key = true
               end
-              metadata[:value] = TypedValueParser.stringify(value)
-              metadata[:type] = (value.is_a?(TrueClass) || value.is_a?(FalseClass)) ? 'Boolean' : value.class.to_s
+              {
+                :key => key,
+                :value => TypedValueParser.stringify(value),
+                :type => TypedValueParser.determine_type_string(value),
+                :nonCommonKey => non_common_key,
+                :nonCommonValue => non_common_value
+              }
             }
             return result
           end
@@ -162,109 +162,47 @@ module AE
           private :most_common
 
 
-=begin
-          def get_all_attributes(entities, path)
-            result = {}
-            # Collect all attributes of all entities.
-            entities.each{ |entity|
-              dictionary = find_dictionary(entity, path)
-              next unless dictionary
-              dictionary.each_pair{ |key, value|
-                result[key] ||= { :value => [] }
-                result[key][:value] << value
-              }
-            }
-            # Merge all values for the same attributes.
-            result.each{ |key, data|
-              # The collected values in an array.
-              values = data[:value]
-              # Merge.
-              value = most_common(values)
-              data[:value] = TypedValueParser.stringify(value)
-              data[:type] = (value.is_a?(TrueClass) || value.is_a?(FalseClass)) ? 'Boolean' : value.class.to_s
-            }
-            return result
-          end
-
-
-          # Distinguish attributes into those used by all entities (common), and those used only by some.
-          def get_not_common_attributes(entities, path)
-            result = {}
-            dictionaries = entities.map{ |entity| find_dictionary(entity, path) }.compact
-            keys = dictionaries.map{ |dictionary| dictionary.keys }.flatten.uniq
-            # Collect all dictionaries of all entities.
-            keys.each{ |key|
-              # Add keys if they are not shared by all trees.
-              if dictionarieses.find{ |dictionary| not (dictionary.include?(key)) }
-                result[key] = true # TODO: missing check whether key is (not) shared or values are (not) shared (different values)
-              end
-            }
-            return result
-          end
-=end
-
-
           ### Helper methods for comparing dictionary trees ###
 
 
           # For several trees of nested attribute dictionaries, get the united tree.
-          # @param [Array<Sketchup::AttributeDictionaries>] attribute_dictionarieses
+          # @param [Array<Sketchup::AttributeDictionaries>] attribute_dictionaries_list
           # @return [Hash<String,Hash>]
-          def tree_union(attribute_dictionarieses)
-            # Empty attribute_dictionaries are nil, so we should not try to iterate over them.
-            attribute_dictionarieses.compact!
-            union = {}
+          def merge_dictionaries(attribute_dictionaries_list)
+            union = []
             # Get all node names.
-            names = attribute_dictionarieses.map{ |attribute_dictionaries|
+            names = attribute_dictionaries_list.compact.map{ |attribute_dictionaries|
               attribute_dictionaries.map{ |attribute_dictionary| attribute_dictionary.name }
             }.flatten.uniq
             # For each, collect the union of all subtrees.
             names.each{ |name|
-              union[name] = tree_union(attribute_dictionarieses.map{ |attribute_dictionaries|
-                # If the attribute_dictionary of the given name contains further nested attribute_dictionaries, collect them.
-                attribute_dictionaries[name] && attribute_dictionaries[name].attribute_dictionaries
-              }.compact)
+              union << {
+                :name => name,
+                :children => merge_dictionaries(attribute_dictionaries_list.map{ |attribute_dictionaries|
+                  # If the attribute_dictionary of the given name contains further nested attribute_dictionaries, collect them.
+                  attribute_dictionaries[name] && attribute_dictionaries[name].attribute_dictionaries
+                }),
+                :nonCommonDictionary => !all_have_dictionary_with_name(attribute_dictionaries_list, name)
+              }
             }
             return union
           end
-          private :tree_union
+          private :merge_dictionaries
 
 
-          # For several trees of nested attribute dictionaries, get only those nodes that
-          # are not common by all trees.
-          # Only leaf nodes of the resulting data structure are member of the exclusion (value: true).
-          # @param [Array<Sketchup::AttributeDictionaries>] attribute_dictionarieses
-          # @return [Hash<String,TrueClass>]
-          def tree_exclusion(attribute_dictionarieses)
-            # If there are empty attribute_dictionaries = nil, all other attribute_dictionaries are part of the exclusion.
-            contains_nil = attribute_dictionarieses.include?(nil)
-            attribute_dictionarieses.compact!
-            exclusion = {}
-            # Get all node names.
-            names = attribute_dictionarieses.map{ |attribute_dictionaries|
-              attribute_dictionaries.map{ |attribute_dictionary| attribute_dictionary.name }
-            }.flatten.uniq
-            #
-            return Hash[names.map{|n| [n, true] }] if contains_nil
-            # For each, collect the exclusion of all subtrees.
-            names.each{ |name|
-              # Add names as leaves if they are not shared by all trees.
-              if attribute_dictionarieses.find{ |attribute_dictionaries| not (attribute_dictionaries.include?(name)) }
-                exclusion[name] = true
-              else
-                nested_attribute_dictionarieses = attribute_dictionarieses.map{ |attribute_dictionaries|
-                  attribute_dictionaries[name].attribute_dictionaries
-                }
-                # Only if subtrees contain names that are not shared by all trees:
-                # Add names as navigation nodes.
-                unless nested_attribute_dictionarieses.all?{ |attribute_dictionaries| attribute_dictionaries.nil? }
-                  exclusion[name] = tree_exclusion(nested_attribute_dictionarieses)
-                end
-              end
-            }
-            return exclusion
+          def all_have_dictionary_with_name(attribute_dictionaries_list, name)
+            return attribute_dictionaries_list.find{ |attribute_dictionaries|
+              !(attribute_dictionaries[name])
+            }.nil?
           end
-          private :tree_exclusion
+          private :all_have_dictionary_with_name
+
+
+          def is_non_common_dictionary(entities, path)
+            return entities.any?{ |entity|
+              !find_dictionary(entity, path, false)
+            }
+          end
 
 
           ### Methods for modifying attributes ###
@@ -301,9 +239,14 @@ module AE
               e = (parent_path.empty?) ? entity : find_dictionary(entity, parent_path, true)
               unless old_name == new_name
                 old_dict = e.attribute_dictionary(old_name)
-                old_dict.each{ |key, value|
-                  e.set_attribute(new_name, key, value)
-                }
+                if old_dict
+                  old_dict.each{ |key, value|
+                    e.set_attribute(new_name, key, value)
+                  }
+                end
+                new_dict = e.attribute_dictionary(new_name, true)
+                # Preserve nested dictionaries
+                copy_dictionaries(old_dict, new_dict, recursive=true)
                 e.attribute_dictionaries.delete(old_name)
               end
             }
@@ -329,15 +272,13 @@ module AE
           # @param [Object] value - The value to be added.
           def set_attribute(entities, path, attribute, value)
             dictionary_name = path.last
-            unless attribute.empty?
-              entities.each{ |entity|
-                dict = find_dictionary(entity, path, true)
-                # TODO: raise?
-                next warn("AttributeInspector: dictionary `#{path.inspect}` not found for entity #{entity}") unless dict # TODO: can this happen?
-                ent = dict.parent.parent # attribute_dictionary -> attribute_dictionaries -> entity
-                ent.set_attribute(dictionary_name, attribute, value)
-              }
-            end
+            entities.each{ |entity|
+              dict = find_dictionary(entity, path, true)
+              # TODO: raise?
+              next warn("AttributeInspector: dictionary `#{path.inspect}` not found for entity #{entity}") unless dict # TODO: can this happen?
+              ent = dict.parent.parent # attribute_dictionary -> attribute_dictionaries -> entity
+              ent.set_attribute(dictionary_name, attribute, value)
+            }
           end
 
 
@@ -349,12 +290,17 @@ module AE
           # @note If an entity did not have this attribute, then only the new attribute
           #   is created, but the correct value is not added.
           def rename_attribute(entities, path, old_attribute, new_attribute)
-            #if old_attribute.is_a?(String) && new_attribute.is_a?(String)
-            unless old_attribute.empty? || new_attribute.empty?
+            unless old_attribute.empty?
+              value = most_common(entities.map{ |entity|
+                dict = find_dictionary(entity, path, true)
+                dict && dict[old_attribute]
+              })
+            end
+            unless old_attribute.empty?
               entities.each{ |entity|
                 dict = find_dictionary(entity, path, true)
-                next warn("AttributeInspector: dictionary `#{path.inspect}` not found for entity #{entity}") unless dict # TODO: can this happen?
-                dict[new_attribute] = dict[old_attribute]
+                next warn("AttributeInspector: dictionary `#{path.inspect}` not found for entity #{entity}") unless dict
+                dict[new_attribute] = value
                 dict.delete_key(old_attribute) unless new_attribute == old_attribute
               }
             end
@@ -391,6 +337,24 @@ module AE
           end
 
 
+          def copy_dictionaries(source_entity, target_entity, recursive=false)
+            if source_entity.attribute_dictionaries
+              source_entity.attribute_dictionaries.each{ |source_dict|
+                name = source_dict.name
+                source_dict.each{ |key, value|
+                  target_entity.set_attribute(name, key, value)
+                }
+                if recursive
+                  target_dict = target_entity.attribute_dictionary(name)
+                  if target_dict
+                    copy_dictionaries(source_dict, target_dict, recursive=recursive)
+                  end
+                end
+              }
+            end
+          end
+
+
       end # class << self
 
 
@@ -401,53 +365,3 @@ module AE
 
 
 end # module AE
-
-
-=begin
-# Tree Algorithms
-
-def tree_union(trees)
-  union = {}
-  keys = trees.map{ |tree| tree.keys }.flatten.uniq
-  keys.each{ |key|
-    union[key] = tree_union(trees.select{ |tree| tree[key].is_a?(Hash) })
-  }
-  return union
-end
-
-def tree_intersection(trees)
-  intersection = {}
-  keys = trees.map{ |tree| tree.keys }.flatten.uniq
-  keys.each{ |key|
-    unless trees.find{ |tree| not tree.include?(key) }
-      intersection[key] = tree_intersection(trees.map{ |tree| tree[key] })
-    end
-  }
-  return intersection
-end
-
-# Only leaf nodes of the resulting data structure are member of the exclusion.
-# Exclusion = Union - Intersection
-def tree_exclusion(trees)
-  contains_nil = trees.include?(nil)
-  trees.compact!
-  exclusion = {}
-  keys = trees.map{ |tree| tree.keys }.flatten.uniq
-  return Hash[keys.map{|n| [n, true] }] if contains_nil
-  # For each, collect the exclusion of all subtrees.
-  keys.each{ |key|
-    # Add keys as leaves if they are not shared by all trees.
-    if trees.find{ |tree| not tree.include?(key) }
-      exclusion[key] = true
-    else
-      nested_trees = trees.map{ |tree| tree[key] }
-      # Only if subtrees contain keys that are not shared by all trees:
-      # Add keys as navigation nodes.
-      unless nested_trees.all?{ |tree| not (tree.nil? || tree.empty?) }
-        exclusion[key] = tree_exclusion(nested_trees)
-      end
-    end
-  }
-  return exclusion
-end
-=end

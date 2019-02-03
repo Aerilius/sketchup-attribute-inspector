@@ -26,14 +26,18 @@ module AE
         # up-to-date anymore. Because of this, we filter out double triggers by waiting
         # in onSelectionCleared and checking whether it is followed by onSelectionBulkChange.
         def onSelectionBulkChange(selection)
-          @is_selection_cleared = false unless selection.empty?
-          @instance.select(*selection.to_a)
+          Utils.catch_errors{
+            @is_selection_cleared = false unless selection.empty?
+            @instance.select(*selection.to_a)
+          }
         end
 
         def onSelectionCleared(selection)
           @is_selection_cleared = true
           UI.start_timer(0, false) {
-            @instance.select(*selection.to_a) if @is_selection_cleared
+            Utils.catch_errors{
+              @instance.select(*selection.to_a) if @is_selection_cleared
+            }
           }
         end
 
@@ -50,18 +54,22 @@ module AE
         # Since active/selected definition in DefinitionsList can not be observed, 
         # we workaround it and use the definition of the selected DrawingElement.
         def onSelectionBulkChange(selection)
-          @is_selection_cleared = false unless selection.empty?
-          definitions = selection.to_a.select{ |e| e.respond_to?(:definition) }.map{ |e| e.definition }
-          @instance.select(*definitions)
+          Utils.catch_errors{
+            @is_selection_cleared = false unless selection.empty?
+            definitions = selection.to_a.select{ |e| e.respond_to?(:definition) }.map{ |e| e.definition }
+            @instance.select(*definitions)
+          }
         end
 
         def onSelectionCleared(selection)
           @is_selection_cleared = true
           UI.start_timer(0, false) {
-            if @is_selection_cleared
-              definitions = selection.to_a.select{ |e| e.respond_to?(:definition) }.map{ |e| e.definition }
-              @instance.select(*definitions)
-            end
+            Utils.catch_errors{
+              if @is_selection_cleared
+                definitions = selection.to_a.select{ |e| e.respond_to?(:definition) }.map{ |e| e.definition }
+                @instance.select(*definitions)
+              end
+            }
           }
         end
 
@@ -75,7 +83,10 @@ module AE
         end
 
         def onMaterialSetCurrent(materials, material)
-          @instance.select(material)
+          # TODO: This should trigger when Materials#current changes.
+          Utils.catch_errors{
+            @instance.select(material)
+          }
         end
 
       end
@@ -88,7 +99,9 @@ module AE
         end
 
         def onCurrentLayerChanged(layers, layer)
-          @instance.select(layer)
+          Utils.catch_errors{
+            @instance.select(layer)
+          }
         end
 
       end
@@ -102,25 +115,35 @@ module AE
 
         # TODO: This does not trigger when Pages#selected_page changes, only when a page is modified.
         def onContentsModified(pages)
-          @instance.select(pages.selected_page)
+          Utils.catch_errors{
+            @instance.select(pages.selected_page)
+          }
         end
 
       end
 
 
-      class StylesObserver < Sketchup::EntityObserver
+      class RenderingOptionsStylesObserver < Sketchup::RenderingOptionsObserver
 
         def initialize(instance)
           @instance = instance
+          @selected_style = nil
         end
 
-        # TODO: This does not trigger when Styles#selected_style changes, only when a style is modified.
-        def onChangeEntity(styles)
-          @instance.select(styles.selected_style)
+        # Since there is no StylesObserver and EntityObserver (Styles is an Entity)
+        # is not triggered for changed active/selected style,
+        # we workaround it and observe the rendering options.
+        def onRenderingOptionsChanged(rendering_options, type)
+          Utils.catch_errors{
+            styles = rendering_options.model.styles
+            if styles.selected_style != @selected_style
+              @active_style = styles.selected_style
+              @instance.select(styles.selected_style)
+            end
+          }
         end
 
       end
-
 
       class ModelObserver < Sketchup::ModelObserver
 
@@ -129,11 +152,15 @@ module AE
         end
 
         def onTransactionUndo(model)
-          @instance.select_current
+          Utils.catch_errors{
+            @instance.refresh
+          }
         end
 
         def onTransactionRedo(model)
-          @instance.select_current
+          Utils.catch_errors{
+            @instance.refresh
+          }
         end
 
       end
@@ -150,15 +177,21 @@ module AE
         end
 
         def onNewModel(model)
-          @instance.model = model
+          Utils.catch_errors{
+            @instance.model = model
+          }
         end
 
         def onOpenModel(model)
-          @instance.model = model
+          Utils.catch_errors{
+            @instance.model = model
+          }
         end
 
-        def onActivateModel(model)
-          @instance.model = model
+        def onActivateModel(model)  
+          Utils.catch_errors{
+            @instance.model = model
+          }
         end
 
       end

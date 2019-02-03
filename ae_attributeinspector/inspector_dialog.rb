@@ -11,29 +11,9 @@ module AE
       require(File.join(PATH, 'attribute_manipulation.rb'))
 
 
-      ATTRIBUTE_INSPECTOR_HTML = File.join(PATH, 'html', 'AttributeInspector.html') unless defined?(self::ATTRIBUTE_INSPECTOR_HTML)
+      ATTRIBUTE_INSPECTOR_HTML = File.join(PATH, 'html', 'app.html') unless defined?(self::ATTRIBUTE_INSPECTOR_HTML)
 
       attr_reader :dialog, :bridge
-
-=begin
-      def initialize(settings) # TODO: what to do with initializer in mixin?
-        puts("AttributeInspectorDialog.initialize")
-        super
-        #@settings                     = settings
-        @dialog                       = initialize_dialog()
-        puts("@dialog is #{@dialog}")
-        # The entities represented in the dialog
-        @dialog_entities = []
-        # Observe the attribute inspector instance and update the UI.
-        #attribute_inspector_instance.on(:selected) { |selected_entities|
-        #  if @dialog && @dialog.visible?
-        #    @dialog.get('AttributeInspector.refresh', @settings).then{
-        #      @dialog_entities = selected_entities # TODO
-        #    }
-        #  end
-        #}
-      end
-=end
 
       ### Inspector instance methods
 
@@ -57,10 +37,9 @@ module AE
       private
 
 
-      def refresh_dialog
+      def refresh
         if @dialog && @dialog.visible?
-          #@dialog.get('require("./app").refresh', @settings).then{
-          @dialog.get('AttributeInspector.refresh').then{
+          @dialog.get('refresh').then{
             @dialog_entities = @selected_entities
           }
         end
@@ -89,14 +68,6 @@ module AE
         # Add a Bridge to handle JavaScript-Ruby communication.
         Bridge.decorate(dialog)
 
-        dialog.on('loaded') {|action_context|
-          select_current
-          UI.start_timer(0.1, false) {
-            #dialog.call('require("./app").refresh')
-            dialog.call('AttributeInspector.refresh')
-          }
-        }
-
         dialog.on('translate') {|action_context|
           # Translate.
           TRANSLATE.webdialog(dialog)
@@ -112,19 +83,16 @@ module AE
         }
 
         # Transfer the title.
-        dialog.on('get_title') {|action_context|
-          action_context.resolve get_title(*@selected_entities)
-        }
-
-        # Transfer info about related entities.
-        dialog.on('get_related') {|action_context|
-          action_context.resolve get_related(*@selected_entities)
+        dialog.on('get_entity') {|action_context|
+          action_context.resolve({
+            :title => get_title(*@selected_entities),
+            :id => (!@selected_entities.empty?) ? @selected_entities.map(&:object_id).join('.') : nil,
+            :related => get_related(*@selected_entities)
+          })
         }
 
         # Select an entity by id.
         dialog.on('select') {|action_context, identifier|
-          # TODO: Check if it can ever happen that identifier is not found in the
-          # model (due to Ruby garbage collection). If so, use @related_entity variable.
           select(ObjectSpace._id2ref(identifier))
         }
 
@@ -132,31 +100,26 @@ module AE
         dialog.on('get_dictionaries') {|action_context|
           unless @selected_entities.empty?
             action_context.resolve AttributeManipulation.get_all_dictionaries(@selected_entities)
+          else
+            action_context.resolve nil
           end
         }
 
-        # Transfer the tree of non common dictionaries.
-        dialog.on('get_non_common_dictionaries') {|action_context|
-          unless @selected_entities.empty?
-            action_context.resolve AttributeManipulation.get_non_common_dictionaries(@selected_entities)
-          end
+        dialog.on('is_non_common_dictionary') {|action_context, path|
+          action_context.resolve AttributeManipulation.is_non_common_dictionary(@selected_entities, path)
         }
 
         # Transfer attributes of a specific dictionary.
         dialog.on('get_attributes') {|action_context, path|
-          # UI.messagebox("Warning: Multi-selection is currently unsupported. Only attributes of the first selected entity #{@selected_entities.first} are loaded.") if @selected_entities.length > 1 # TODO
           action_context.resolve AttributeManipulation.get_all_attributes(@selected_entities, path)
         }
 
-        # The view has refreshed. Now change requests from the dialog will be applied
-        # to the new entities.
-        dialog.on('view_refreshed') {|action_context| # TODO: remove after testing
-          puts("deprecated view_refreshed called")
-          @dialog_entities = @selected_entities
+        dialog.on('get_entity_type') {|action_context|
+          action_context.resolve self.mode
         }
 
-        dialog.on('set_mode') {|action_context, type|
-          self.mode = (type.upcase.to_sym)
+        dialog.on('set_entity_type') {|action_context, type|
+          self.mode = type.to_sym
         }
 
         # Add a dictionary.
@@ -165,52 +128,87 @@ module AE
           if @dialog_entities.any? {|entity| AttributeManipulation.find_dictionary(entity, path)}
             raise(ArgumentError, 'The dictionary name must be unique and not existing for the current selection set.')
           end
-          @model.start_operation(TRANSLATE['Add attribute dictionary "%0"', path.join('/')])
-          AttributeManipulation.add_dictionary(@dialog_entities, path, {})
-          @model.commit_operation
-          action_context.resolve # TODO: remove?
+          begin
+            @model.start_operation(TRANSLATE['Add attribute dictionary "%0"', path.join('/')])
+            AttributeManipulation.add_dictionary(@dialog_entities, path, {})
+            @model.commit_operation
+            action_context.resolve
+          rescue Exception => error
+            @model.abort_operation
+            Utils.log_error(error)
+            action_context.reject(error)
+          end
         }
 
         # Rename dictionary.
         dialog.on('rename_dictionary') {|action_context, old_path, new_name|
-          @model.start_operation(TRANSLATE['Rename attribute dictionary "%0" to "%1"', (old_path).join('/'), new_name])
-          AttributeManipulation.rename_dictionary(@dialog_entities, old_path, new_name)
-          @model.commit_operation
-          action_context.resolve
+          begin
+            @model.start_operation(TRANSLATE['Rename attribute dictionary "%0" to "%1"', (old_path).join('/'), new_name])
+            AttributeManipulation.rename_dictionary(@dialog_entities, old_path, new_name)
+            @model.commit_operation
+            action_context.resolve
+          rescue Exception => error
+            @model.abort_operation
+            Utils.log_error(error)
+            action_context.reject(error)
+          end
         }
 
         # Remove dictionary.
         dialog.on('remove_dictionary') {|action_context, path|
-          @model.start_operation(TRANSLATE['Remove attribute dictionary "%0"', path.join('/')])
-          AttributeManipulation.remove_dictionary(@selected_entities, path)
-          @model.commit_operation
-          action_context.resolve
+          begin
+            @model.start_operation(TRANSLATE['Remove attribute dictionary "%0"', path.join('/')])
+            AttributeManipulation.remove_dictionary(@selected_entities, path)
+            @model.commit_operation
+            action_context.resolve
+          rescue Exception => error
+            @model.abort_operation
+            Utils.log_error(error)
+            action_context.reject(error)
+          end
         }
 
         # Create/edit attribute.
         dialog.on('set_attribute') {|action_context, path, attribute, value_string, type_string|
-          # Convert SketchUp types back from JSON-compatible types
-          value = TypedValueParser.parse(value_string, type_string) # TODO: Need to rescue SyntaxError
-          @model.start_operation(TRANSLATE['Set attribute "%0" to "%1"', attribute, value.to_s])
-          AttributeManipulation.set_attribute(@dialog_entities, path, attribute, value)
-          @model.commit_operation
-          action_context.resolve
+          begin
+            @model.start_operation(TRANSLATE['Set attribute "%0" to "%1"', attribute, value_string])
+            # Convert SketchUp types back from JSON-compatible types
+            value = TypedValueParser.parse(value_string, type_string) # TODO: Need to rescue SyntaxError
+            AttributeManipulation.set_attribute(@dialog_entities, path, attribute, value)
+            @model.commit_operation
+            action_context.resolve
+          rescue Exception => error
+            @model.abort_operation
+            action_context.reject(error)
+          end
         }
 
         # Rename attribute.
         dialog.on('rename_attribute') {|action_context, path, old_attribute, new_attribute|
-          @model.start_operation(TRANSLATE['Rename attribute "%0" to "%1"', old_attribute, new_attribute])
-          AttributeManipulation.rename_attribute(@dialog_entities, path, old_attribute, new_attribute)
-          @model.commit_operation
-          action_context.resolve
+          begin
+            @model.start_operation(TRANSLATE['Rename attribute "%0" to "%1"', old_attribute, new_attribute])
+            AttributeManipulation.rename_attribute(@dialog_entities, path, old_attribute, new_attribute)
+            @model.commit_operation
+            action_context.resolve
+          rescue Exception => error
+            @model.abort_operation
+            Utils.log_error(error)
+            action_context.reject(error)
+          end
         }
 
         # Remove attribute.
         dialog.on('remove_attribute') {|action_context, path, attribute|
-          @model.start_operation(TRANSLATE['Remove attribute "%0"', attribute])
-          AttributeManipulation.remove_attribute(@dialog_entities, path, attribute)
-          @model.commit_operation
-          action_context.resolve
+          begin
+            @model.start_operation(TRANSLATE['Remove attribute "%0"', attribute])
+            AttributeManipulation.remove_attribute(@dialog_entities, path, attribute)
+            @model.commit_operation
+            action_context.resolve
+          rescue Exception => error
+            @model.abort_operation
+            Utils.log_error(error)
+            action_context.reject(error)
+          end
         }
 
         if dialog.respond_to?(:set_on_closed) # UI::HtmlDialog
@@ -224,7 +222,6 @@ module AE
         end
         return dialog
       end
-
 
 
       # Determines a title for the given entity or entities.
@@ -269,7 +266,7 @@ module AE
         # If entities have no dictionaries, check if a related selected entity in a
         # different mode has dictionaries.
         if entities.all? {|e| e.attribute_dictionaries.nil?}
-          model       = (entities.empty?) ? Sketchup.active_model : entities.first.model
+          model       = (entities.empty? || entities.first.is_a?(Sketchup::Model)) ? Sketchup.active_model : entities.first.model
           alternative = nil
           # Selection
           alternative = model.selection.find {|e| e.attribute_dictionaries}
@@ -285,8 +282,10 @@ module AE
           alternative = model.styles.selected_style if model.styles.selected_style && model.styles.selected_style.attribute_dictionaries unless alternative
           if alternative
             type  = alternative.typename
-            title = TRANSLATE['currently selected %0', type]
-            return title, alternative.object_id
+            return {
+              :title => TRANSLATE['currently selected %0', type],
+              :id    => alternative.object_id
+            }
           end
         end
         # If all entities are edges and part of same curve.
@@ -294,15 +293,19 @@ module AE
           curve = entities.first.curve
           type  = curve.typename
           type  = 'Circle' if curve.end_angle.to_l == 360.degrees
-          title = TRANSLATE[type]
-          return title, curve.object_id
+          return {
+            :title => TRANSLATE[type],
+            :id    => curve.object_id
+          }
         end
         # If entities are component instances of same definition.
         if entities_of_same_component_definition?(*entities)
           definition = entities.first.definition
-          type       = definition.typename
-          title      = TRANSLATE[type]
-          return title, definition.object_id
+          type  = definition.typename
+          return {
+            :title => TRANSLATE[type],
+            :id    => definition.object_id
+          }
         end
       end
 

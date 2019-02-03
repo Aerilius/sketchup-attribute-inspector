@@ -48,7 +48,7 @@ ul[role="tree"] li[aria-expanded="true"]>ul {
 }
 
 .a11ytree li .tree-view-node-label {
-  display: inline-block;
+  display: block;
   border: dotted 1px #eee;
   margin-top: -1px; /* for collapsing dotted borders */
   padding: 0.2em 0.2em;
@@ -74,24 +74,28 @@ ul[role="tree"] li[aria-expanded="true"]>ul {
 
 .a11ytree li .at-toggle {
   float: left;
-  width: 1em;
   margin-left: -1em;
   padding: 0.2em 0; /* same as .a11ytree li .tree-view-node-label */
   color: WindowText;
   text-align: center;
   /* Extend click area of branch arrow button to the right */
   position: relative;
-  margin-right: -1em;
-  padding-right: 1em;
+  margin-right: -2em;
+  padding-right: 2em;
   z-index: 1;
+  width: 1em;
+  height: 1em;
 }
-
-/* Symbols */
 
 .a11ytree li .at-toggle:before, .a11ytree li > .at-toggle:before {
   transition-duration: 0.5s;
   display: block;
-  content: "▶";
+  width: 1em;
+  height: 1em;
+  content: '';
+  background: url('../images/arrow.svg') no-repeat;
+  background-size: contain;
+  background-position: center;
 }
 
 .a11ytree li .at-toggle:before, .a11ytree li[aria-expanded="false"] > .at-toggle:before {
@@ -100,15 +104,9 @@ ul[role="tree"] li[aria-expanded="true"]>ul {
 
 .a11ytree li[aria-expanded="true"] > .at-toggle:before {
   transform: rotate(90deg);
-  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
 /* Workarounds */
-
-/* IE doesn't know ▶ and due to a font bug, the right character (U+25B6 ▶) is located at U+25BA (►). */
-/*html.ie8 .a11ytree li .at-toggle:before, html.ie8 .a11ytree li[aria-expanded="false"] > .at-toggle:before {
-  content: "►";
-}*/
 
 /* In IE8, attribute selectors are buggy and font rendering (font color) doesn't 
  * refresh when aria-selected is not anymore "true" while background color refreshes

@@ -15,6 +15,7 @@
 "Geom::Vector3d"="Vector";
 "Sketchup::Color"="Color";
 "Time"="Time";
+"JSON"="JSON";
 
 // General
 "dictionary"="dictionary";
@@ -43,25 +44,25 @@
 "Remove the selected attribute"="Remove the selected attribute";
 
 // Default texts
-"This entity has not yet any attribute dictionaries."="This entity has not yet any attribute dictionaries."
-"These entities have not yet any attribute dictionaries."="These entities have not yet any attribute dictionaries."
-"This dictionary has not yet any attributes."="This dictionary has not yet any attributes."
+"No entities selected"="No entities selected";
+"No attribute dictionaries"="This entity has not yet any attribute dictionaries.";
+"No attribute dictionaries (2)"="These entities have not yet any attribute dictionaries.";
+"No attributes"="This dictionary has not yet any attributes.";
 
 // Entity types
-"inspect currently selected"="inspect currently selected";
-"How to select other entity types"="To view attributes of other entity types, select the option below and the use the materials browser to select a material, the layers manager to select a layer (radio box) or the scenes manager to select a scene (double-click).";
+"How to select other entity types"="To view attributes of other entity types, select then option below and the use the materials browser to select a material, the layers manager to select a layer (radio box) or the scenes manager to select a scene (double-click).";
 "drawing elements"="drawing elements";
 "component definitions"="component definitions";
 "materials"="materials";
 "layers"="layers";
 "scenes"="scenes";
 "styles"="styles";
-"DRAWING_ELEMENTS"="drawing elements";
-"DEFINTIONS"="component definitions";
-"MATERIALS"="materials";
-"LAYERS"="layers";
-"PAGES"="scenes";
-"STYLES"="styles";
+"Drawingelement"="drawing elements";
+"ComponentDefinition"="component definitions";
+"Material"="materials";
+"Layer"="layers";
+"Page"="scenes";
+"Style"="styles";
 
 // WebDialog prompt
 "Choose a dictionary name:"="Choose a dictionary name:";
@@ -71,6 +72,9 @@
 // Other WebDialog texts
 "When you change a grayed out value that is not shared by all selected entities, it will be added to all selected entities."="When you change a grayed out value that is not shared by all selected entities, it will be added to all selected entities.";
 "Allow editing grayed values"="Allow editing grayed values";
+"JSON Tree"="JSON Tree";
+"JSON Source"="JSON Source";
+"A dictionary with the same name already exists. Please choose a different name."="A dictionary with the same name already exists. Please choose a different name.";
 
 // Quotes
 "\"%0\""="\"%0\"";
@@ -79,7 +83,6 @@
 "No entity selected"="No entity selected";
 "entities"="entities";
 "see also: "="see also: ";
-"see also: %0"="see also: %0";
 "currently selected %0"="currently selected %0";
 
 // Names of entity types

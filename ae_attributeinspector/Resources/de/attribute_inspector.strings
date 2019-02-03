@@ -15,6 +15,7 @@
 "Geom::Vector3d"="Vektor";
 "Sketchup::Color"="Farbe";
 "Time"="Zeit";
+"JSON"="JSON";
 
 // General
 "dictionary"="Wörterbuch";
@@ -43,12 +44,12 @@
 "Remove the selected attribute"="Ausgewähltes Attribut entfernen";
 
 // Default texts
-"This entity has not yet any attribute dictionaries."="Dieses Element hat noch keine Wörterbücher.";
-"These entities have not yet any attribute dictionaries."="Diese Elemente haben noch keine Wörterbücher.";
-"This dictionary has not yet any attributes."="Dieses Wörterbuch hat noch keine Attribute.";
+"No entities selected"="Keine Elemente ausgewählt";
+"No attribute dictionaries"="Dieses Element hat noch keine Wörterbücher.";
+"No attribute dictionaries (2)"="Diese Elemente haben noch keine Wörterbücher.";
+"No attributes"="Dieses Wörterbuch hat noch keine Attribute.";
 
 // Entity types
-"inspect currently selected"="untersuche aktuell ausgewählte";
 "How to select other entity types"="Um Attribute von anderen Elemententypen zu sehen, wähle den Typ aus und verwende den Materialbrowser um ein Material auszuwählen, den Layermanager um einen Layer auszuwählen (Radiobutton) oder den Szenenmanager um eine Szene auszuwählen (Doppelklick).";
 "drawing elements"="Zeichenelemente";
 "component definitions"="Komponentendefinitionen";
@@ -56,12 +57,12 @@
 "layers"="Layer";
 "scenes"="Szenen";
 "styles"="Stile";
-"DRAWING_ELEMENTS"="Zeichenelemente";
-"DEFINTIONS"="Komponentendefinitionen";
-"MATERIALS"="Materialien";
-"LAYERS"="Layer";
-"PAGES"="Szenen";
-"STYLES"="Stile";
+"Drawingelement"="Zeichenelemente";
+"ComponentDefinition"="Komponentendefinitionen";
+"Material"="Materialien";
+"Layer"="Layer";
+"Page"="Szenen";
+"Style"="Stile";
 
 // WebDialog prompt
 "Choose a dictionary name:"="Wörterbuchname auswählen:";
@@ -71,6 +72,9 @@
 // Other WebDialog texts
 "When you change a grayed out value that is not shared by all selected entities, it will be added to all selected entities."="Wenn ein ausgegrauter Wert geändert wird, der nicht in allen ausgewählten Elementen enthalten ist, wird er zu allen ausgewählten Elementen hinzugefügt.";
 "Allow editing grayed values"="Ausgegraute Werte verändern";
+"JSON Tree"="JSON Baum";
+"JSON Source"="JSON Quelltext";
+"A dictionary with the same name already exists. Please choose a different name."="Ein Wörterbuch mit dem selben Namen existiert bereits. Bitte wähle einen anderen Namen.";
 
 // Quotes
 "\"%0\""="„%0“";
@@ -79,7 +83,6 @@
 "No entity selected"="Kein Element ausgewählt";
 "entities"="Elemente";
 "see also: "="siehe auch: ";
-"see also: %0"="siehe auch: %0";
 "currently selected %0"="aktuell ausgewählte(r/s) %0";
 
 // Names of entity types

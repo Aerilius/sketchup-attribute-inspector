@@ -4,8 +4,30 @@ module AE
   module AttributeInspector
 
 
+# TODO: utils.rb ?
+module Utils
+
+  def self.log_error(error)
+    if defined?(AE::ConsolePlugin)
+      AE::ConsolePlugin.error(error)
+    else
+      $stderr.write(error.message + $/)
+      $stderr.write(error.backtrace.join($/) + $/)
+    end
+  end
+
+  def self.catch_errors(&block)
+    begin
+      return block.call
+    rescue Exception => error
+      self.log_error(error)
+    end
+  end
+
+end
+
     require(File.join(PATH, 'inspector_dialog.rb'))
-    require(File.join(PATH, 'observable.rb'))
+    #require(File.join(PATH, 'observable.rb'))
     require(File.join(PATH, 'observing.rb'))
 
 
@@ -13,7 +35,7 @@ module AE
 
       include AttributeInspectorDialog
 
-      include Observable
+      #include Observable
 
       MAX_ENTITIES_LIMIT = 100 unless defined?(self::MAX_ENTITIES_LIMIT) # The maximum amount of entities in the selection set that will be processed by this plugin, for performance reasons.
 
@@ -21,16 +43,19 @@ module AE
       public ### PUBLIC INSTANCE METHODS ###
 
 
+      attr_reader :mode
+
+
       def open
         # Add app observer.
-        Observing.add_observer(Sketchup, Observers::NewModelObserver, self)
+        @observing.add_observer(Sketchup, Observers::NewModelObserver)
         super
       end
 
 
       def close
         # Remove app observer and all other observers.
-        Observing.unwatch_all
+        @observing.unwatch_all
         super
       end
 
@@ -50,25 +75,27 @@ module AE
         entities = entities.grep(Sketchup::Entity).concat(entities.grep(Sketchup::Model))
         if entities.empty?
           model = Sketchup.active_model
-          entities_to_select = (@mode == :DRAWING_ELEMENTS) ? [model] : []
+          entities_to_select = (@mode == Mode::Drawingelement) ? [model] : []
           return self if entities_to_select == @selected_entities # No need to update dialog if selection did not change.
-          switch_to_model(model)
+          switch_to_model(model) if model != @model
           @selected_entities = entities_to_select
         elsif entities.length == 1 && entities.first.is_a?(Sketchup::Model)
-          entities_to_select = [entities.first]
+          model = entities.first
+          entities_to_select = [model]
           return self if entities_to_select == @selected_entities
+          switch_to_model(model) if model != @model
+          switch_to_mode(Mode.from_entity(entities.first))
           @selected_entities = entities_to_select
-          switch_to_model(entities.first)
         else
           model = entities.first.model
           entities_to_select = entities.select {|e| e.model == model}
           return self if entities_to_select == @selected_entities
-          switch_to_model(model)
+          switch_to_model(model) if model != @model
+          switch_to_mode(Mode.from_entity(entities.first))
           @selected_entities = entities_to_select
         end
-        # Refresh the dialog # TODO: remove comment (refresh_dialog)
-        #trigger(:selected, @selected_entities)
-        refresh_dialog
+        # Refresh the UI
+        refresh
         return self
       end
 
@@ -76,17 +103,17 @@ module AE
       # Preselects entities according to the current mode.
       def select_current
         entities = case @mode
-        when :DRAWING_ELEMENTS then
+        when Mode::Drawingelement then
           (@model.selection.empty?) ? @model : @model.selection.to_a
-        when :DEFINITIONS then
+        when Mode::ComponentDefinition then
           @model.selection.to_a.select {|e| e.respond_to?(:definition)}.map {|e| e.definition}
-        when :MATERIALS then
+        when Mode::Material then
           @model.materials.current
-        when :LAYERS then
+        when Mode::Layer then
           @model.active_layer
-        when :PAGES then
+        when Mode::Page then
           @model.pages.selected_page
-        when :STYLES then
+        when Mode::Style then
           @model.styles.selected_style # TODO
         end
         select(entities)
@@ -96,7 +123,7 @@ module AE
 
       # Sets the mode from which entity types to take the current selected item(s)
       # and selects the current entities for this mode.
-      # @param [Symbol] mode - one of [:DRAWING_ELEMENTS, :DEFINITIONS, :MATERIALS, :LAYERS, :PAGES, :STYLES]
+      # @param [Symbol] mode - one of [:Drawingelement, :ComponentDefinition, :Material, :Layer, :Page, :Style]
       def mode=(mode)
         raise ArgumentError unless Mode.constants.include?(mode)
         return if mode == @mode
@@ -110,12 +137,19 @@ module AE
       # Sets the currently active model and selects the current entities for this model.
       # @param [Sketchup::Model] model
       def model=(model)
-        return if model == @model
+        # SketchUp recycles model instances, so when opening a new model the instance might still be equal to the previous.
+        #return if model == @model && model.guid == @model.guid
         raise ArgumentError unless model.is_a?(Sketchup::Model) && model.valid?
         # Switch the model.
         switch_to_model(model)
         # Set the selection according to the newly selected model.
         select_current
+      end
+
+
+      def refresh
+        super
+        return self
       end
 
 
@@ -140,8 +174,9 @@ module AE
         raise unless model.is_a?(Sketchup::Model)
         @model = nil
         # The mode, which type of entities are observed (selection, materials, layers, pages, styles)
-        @mode = settings.get('mode', :DRAWING_ELEMENTS).to_sym
-
+        @mode = settings.get('mode', Mode::Drawingelement).to_sym
+        # The observer manager
+        @observing = Observing.new(self)
         # The newest selected entities whose dictionaries will be send to the dialog.
         @selected_entities = []
         # Initially, select the current model.
@@ -152,33 +187,34 @@ module AE
 
 
       # Sets the mode from which entity types to take the current selected item(s).
-      # @param [Symbol] mode - one of [:DRAWING_ELEMENTS, :DEFINITIONS, :MATERIALS, :LAYERS, :PAGES, :STYLES]
+      # @param [Symbol] mode - one of [:Drawingelement, :ComponentDefinition, :Material, :Layer, :Page, :Style]
       def switch_to_mode(mode)
-        return if mode == @mode
+        return if mode == @mode || mode == Mode::Other
         # Stop observing the previous mode on the currently selected model.
-        Observing.unwatch(@model, @mode)
+        @observing.unwatch(@model, @mode)
         # Switch the mode variable.
         @mode             = mode
         @settings['mode'] = mode
         # Start observing the new mode on the currently selected model.
-        Observing.watch(@model, mode, self)
+        @observing.watch(@model, mode)
       end
 
 
       # Sets the currently active model.
       # @param [Sketchup::Model] model
       def switch_to_model(model)
-        return if model == @model
+        # SketchUp recycles model instances, so when opening a new model the instance might still be equal to the previous.
+        #return if model == @model && model.guid == @model.guid
         # Remove the model observer from the previously selected model.
-        Observing.remove_observer(@model)
+        @observing.remove_observer(@model)
         # Stop observing the current mode on the previously selected model.
-        Observing.unwatch(@model, @mode)
+        @observing.unwatch(@model, @mode)
         # Switch the model variable.
         @model = model
         # Add a model observer to the newly selected model.
-        Observing.add_observer(model, Observers::ModelObserver, self)
+        @observing.add_observer(model, Observers::ModelObserver, self)
         # Start observing the current mode on the newly selected model.
-        Observing.watch(model, @mode, self)
+        @observing.watch(model, @mode)
       end
 
 
