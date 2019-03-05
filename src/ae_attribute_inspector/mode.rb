@@ -42,6 +42,7 @@ module AE
       end
 
     end
+    private_constant(:Mode) if methods.include?(:private_constant)
 
 
   end
