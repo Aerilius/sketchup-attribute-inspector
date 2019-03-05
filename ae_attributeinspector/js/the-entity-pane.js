@@ -1,20 +1,35 @@
-define(['vue', 'vs-notify', './bridge', './translate'], function (Vue, _, Bridge, Translate) {
+define(['vue', 'vs-notify', './bridge', './translate', './style'], function (Vue, _, Bridge, Translate, Style) {
 
-  var s = document.createElement('style');
-  s.type = 'text/css';
-  document.getElementsByTagName('head')[0].appendChild(s);
-  s.innerHTML =
-'.related_title {\n\
-  display: inline-block;\n\
-  font-size: 80%;\n\
-  color: GrayText;\n\
+  Style.addCSS(
+'.the-entity-pane > .clip-box:first-child {\n\
+  width: 100%;\n\
 }\n\
-.related_title a {\n\
-  color: #47e;\n\
+.the-entity-pane .selected-title {\n\
+    display: inline;\n\
+    font: caption;\n\
+    font-size: 1.125em !important;\n\
+    font-weight: bold !important;\n\
 }\n\
-.related_title a:hover {\n\
-  text-decoration: underline;\n\
-}';
+.the-entity-pane .related-title {\n\
+    display: inline-block;\n\
+    font-size: 80%;\n\
+    color: GrayText;\n\
+}\n\
+.the-entity-pane .related-title a {\n\
+    color: #47e;\n\
+}\n\
+.the-entity-pane .related-title a:hover {\n\
+    text-decoration: underline;\n\
+}\n\
+/* Spread contained elements by their content width using table layout. */\n\
+.the-entity-pane.horizontal-flex-parent {\n\
+    display: table;\n\
+}\n\
+.the-entity-pane.horizontal-flex-parent > * {\n\
+    display: table-cell;\n\
+    height: inherit;\n\
+    vertical-align: top; /* to prevent odd layout issue, breaking into two lines. */\n\
+}');
 
   Vue.component('the-entity-pane', {
     data: function () {
@@ -47,7 +62,6 @@ define(['vue', 'vs-notify', './bridge', './translate'], function (Vue, _, Bridge
           self.entityType = entityType;
         });
         Bridge.get('get_entity').then(function (entity) {
-          console.log('get_entity', JSON.parse(JSON.stringify(entity)));//////////
           if (entity && (!self.entity || self.entity.id != entity.id)) {
             self.entity = entity;
           } else {
@@ -66,20 +80,20 @@ define(['vue', 'vs-notify', './bridge', './translate'], function (Vue, _, Bridge
       }
     },
     template:
-'<div class="top-toolbar horizontal-flex-parent">\n\
-  <clip-box style="width: 100%">\n\
+'<div class="the-entity-pane horizontal-flex-parent">\n\
+  <clip-box class="clip-box">\n\
     <span style="line-height: 0.9em">\n\
-      <h2 style="display: inline; font: caption; font-size: 1.125em !important; font-weight: bold !important;">\n\
+      <h2 class="selected-title">\n\
         {{ (entity && entity.id) ? entity.title : tr(defaultEntityTitle) }}\n\
       </h2>\n\
-      <span class="related_title">{{ (entity && entity.related && entity.related.title) ? tr("see also: ") : ""}}\n\
+      <span class="related-title">{{ (entity && entity.related && entity.related.title) ? tr("see also: ") : ""}}\n\
         <a v-if="entity && entity.related && entity.related.title" \n\
            @click="selectRelatedEntity"> \n\
            {{ entity.related.title }}</a>\n\
       </span>\n\
     </span>\n\
   </clip-box>\n\
-  <clip-box>\n\
+  <clip-box class="clip-box">\n\
     <label :title="tr(\'How to select other entity types\')">\n\
       <select ref="typeSelector" \n\
               :value="entityType" \n\

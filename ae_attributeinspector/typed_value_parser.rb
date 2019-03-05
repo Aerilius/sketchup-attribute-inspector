@@ -82,6 +82,12 @@ def self.parse(string, type=nil)
   #   when nested in an array, they must always be wrapped in 
   #     Color(128,128,128,255), Point3d(1,0,0), Vector3d(1,0,0) etc.
   when klass == String then string
+  when klass == JSON
+    begin
+      JSON.parse(string)
+    rescue JSON::ParserError => error
+      raise(SyntaxError, error)
+    end
   when klass == self::Integer
     # Match against a regular expression, if not match then raise syntax error.
     string[INTEGER] || raiseSyntaxError(string, type)

@@ -1,4 +1,66 @@
-define(['vue', './tree-view', 'vs-notify', './vs-prompt', './bridge', './translate'], function (Vue, _, _, _, Bridge, Translate) {
+define(['vue', './tree-view', 'vs-notify', './vs-prompt', './bridge', './translate', './style'], function (Vue, _, _, _, Bridge, Translate, Style) {
+
+  Style.addCSS(
+'/* Overlay toolbar for small buttons to expand/collapse the treeview */\n\
+.the-dictionary-pane .overlay-toolbar {\n\
+    position: absolute;\n\
+    z-index: 1;\n\
+}\n\
+.the-dictionary-pane .overlay-toolbar.right {\n\
+    right: 0;\n\
+    float: right;\n\
+}\n\
+.the-dictionary-pane .overlay-toolbar button {\n\
+    width: 1.25em;\n\
+    height: 1.25em;\n\
+    /* Add some space to avoid overlap with container border */\n\
+    position: relative;\n\
+    top: 1px;\n\
+    right: 1px;\n\
+    -moz-appearance: none;\n\
+}\n\
+.the-dictionary-pane .overlay-toolbar button:not(:hover) {\n\
+    background: transparent;\n\
+    border: none;\n\
+}\n\
+.the-dictionary-pane .overlay-toolbar button img {\n\
+    width: 0.75em;\n\
+    height: 0.75em;\n\
+}\n\
+.the-dictionary-pane .dictionary-list{\n\
+    position: absolute;\n\
+    top: 0;\n\
+    bottom: 2.5em; /* bottom toolbar */\n\
+    left: 0;\n\
+    right: 0;\n\
+    border: 1px ThreeDShadow solid;\n\
+}\n\
+.the-dictionary-pane .dictionary-list {\n\
+    background: white;\n\
+    border-left: none;\n\
+    border-right: none;\n\
+    overflow-x: auto;\n\
+    overflow-y: auto;\n\
+    padding: 1em 0;\n\
+}\n\
+.the-dictionary-pane .bottom-toolbar {\n\
+    position: absolute;\n\
+    bottom: 0;\n\
+    left: 0;\n\
+    height: 2.5em;\n\
+}\n\
+.the-dictionary-pane .message-no-dictionaries {\n\
+    color: silver;\n\
+    font-size: 1.5em;\n\
+    text-align: center;\n\
+    padding: 2em 0.5em;\n\
+    overflow: hidden;\n\
+    text-overflow: ellipsis;\n\
+    word-break: break-word;\n\
+}\n\
+.the-dictionary-pane .grayed {\n\
+    color: #aaaaaa !important;\n\
+}');
 
   Vue.component('the-dictionary-pane', {
     props: {},
@@ -14,7 +76,6 @@ define(['vue', './tree-view', 'vs-notify', './vs-prompt', './bridge', './transla
       refresh: function () {
         var self = this;
         Bridge.get('get_dictionaries').then(function (dictionaries) {
-          console.log('get_dictionaries', dictionaries); ////////////
           self.dictionaries = dictionaries;
           // Initially select a dictionary. Try to match to a recently viewed dictionary, or default to the first.
           Vue.nextTick(function () {
@@ -136,7 +197,7 @@ define(['vue', './tree-view', 'vs-notify', './vs-prompt', './bridge', './transla
       }
     },
     template:
-'<div>\n\
+'<div class="the-dictionary-pane">\n\
   <div class="overlay-toolbar right">\n\
     <button @click="expandAll()" \n\
             :title="tr(\'Expand all\')">\n\

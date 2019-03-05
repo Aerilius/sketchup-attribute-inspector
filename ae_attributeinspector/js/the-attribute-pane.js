@@ -1,4 +1,34 @@
-define(['vue', './table-view', './vs-notify', './bridge', './translate'], function (Vue, _, _, Bridge, Translate) {
+define(['vue', './table-view', './vs-notify', './bridge', './translate', './style'], function (Vue, _, _, Bridge, Translate, Style) {
+
+  Style.addCSS(
+'.the-attribute-pane .attribute-table {\n\
+    position: absolute;\n\
+    top: 0;\n\
+    bottom: 2.5em; /* bottom toolbar */\n\
+    left: 0;\n\
+    right: 0;\n\
+    border: 1px ThreeDShadow solid;\n\
+}\n\
+.the-attribute-pane .attribute-table {\n\
+    border-right: none;\n\
+    overflow-x: hidden;\n\
+    overflow-y: auto;\n\
+}\n\
+.the-attribute-pane .bottom-toolbar {\n\
+    position: absolute;\n\
+    bottom: 0;\n\
+    left: 0;\n\
+    height: 2.5em;\n\
+}\n\
+.the-attribute-pane .message-no-attributes {\n\
+    color: silver;\n\
+    font-size: 1.5em;\n\
+    text-align: center;\n\
+    padding: 2em 0.5em;\n\
+    overflow: hidden;\n\
+    text-overflow: ellipsis;\n\
+    word-break: break-word;\n\
+}');
 
   Vue.component('the-attribute-pane', {
     props: ['selectedDictionary'],
@@ -23,7 +53,6 @@ define(['vue', './table-view', './vs-notify', './bridge', './translate'], functi
           self.attributes = null;
         } else {
           Bridge.get('get_attributes', self.selectedDictionary).then(function (attributes) {
-            console.log('get_attributes', JSON.parse(JSON.stringify(attributes)));//////////
             self.attributes = attributes;
             Bridge.get('is_non_common_dictionary', self.selectedDictionary).then(function (isNonCommonDictionary) {
               self.nonCommonDictionary = isNonCommonDictionary;
@@ -115,7 +144,7 @@ define(['vue', './table-view', './vs-notify', './bridge', './translate'], functi
       }
     },
     template:
-'<div>\n\
+'<div class="the-attribute-pane">\n\
   <div class="attribute-table">\n\
     <table-view v-show="_objectHasKeys(attributes)" \n\
                 ref="tableView" \n\

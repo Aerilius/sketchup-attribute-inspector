@@ -1,16 +1,13 @@
-define(['vue', 'vue-json-viewer', './deferred', './translate', 'vs-notify'], function (Vue, JsonView, Deferred, Translate, _) {
+define(['vue', 'vue-json-viewer', './deferred', './translate', 'vs-notify', './style'], function (Vue, JsonView, Deferred, Translate, _, Style) {
 
-  var s = document.createElement('style');
-  s.type = 'text/css';
-  document.getElementsByTagName('head')[0].appendChild(s);
-  s.innerHTML =
+  Style.addCSS(
 '.jv-container .jv-code {\n\
   max-height: initial !important;\n\
   overflow: visible !important;\n\
 }\n\
 .jv-container .jv-more {\n\
   display: none !important;\n\
-}';
+}');
 
   Vue.use(JsonView.default);
 
@@ -59,7 +56,7 @@ define(['vue', 'vue-json-viewer', './deferred', './translate', 'vs-notify'], fun
       focus: function () {
         var source = this.$refs.source;
         source.focus();
-        window.setTimeout(s.focus.bind(source), 0);
+        window.setTimeout(source.focus.bind(source), 0);
       },
       submit: function () {
         if (this.deferred) {

@@ -180,7 +180,7 @@ module AE
                 :name => name,
                 :children => merge_dictionaries(attribute_dictionaries_list.map{ |attribute_dictionaries|
                   # If the attribute_dictionary of the given name contains further nested attribute_dictionaries, collect them.
-                  attribute_dictionaries[name] && attribute_dictionaries[name].attribute_dictionaries
+                  attribute_dictionaries && attribute_dictionaries[name] && attribute_dictionaries[name].attribute_dictionaries
                 }),
                 :nonCommonDictionary => !all_have_dictionary_with_name(attribute_dictionaries_list, name)
               }
@@ -192,7 +192,7 @@ module AE
 
           def all_have_dictionary_with_name(attribute_dictionaries_list, name)
             return attribute_dictionaries_list.find{ |attribute_dictionaries|
-              !(attribute_dictionaries[name])
+              !attribute_dictionaries || !attribute_dictionaries[name]
             }.nil?
           end
           private :all_have_dictionary_with_name

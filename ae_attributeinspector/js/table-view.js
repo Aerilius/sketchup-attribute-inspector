@@ -1,4 +1,4 @@
-define(['vue', 'debounce', 'vs-notify', './the-json-viewer', './typedvalueparser'], function (Vue, debounce, _, _, TypedValueParser) {
+define(['vue', 'debounce', 'vs-notify', './the-json-viewer', './typedvalueparser', './style'], function (Vue, debounce, _, _, TypedValueParser, Style) {
 
   Vue.component('type-selector', {
     props: {
@@ -21,11 +21,55 @@ define(['vue', 'debounce', 'vs-notify', './the-json-viewer', './typedvalueparser
 </select>'
   });
 
+  Style.addCSS(
+'/* Add an invisible border to allow highlighting */\n\
+/* Align cell content on top */\n\
+.attribute-view {\n\
+    border: 3px transparent none;\n\
+    vertical-align: top;\n\
+}\n\
+.attribute-view > td {\n\
+    border: 1px #eeeeee /*ThreeDShadow*/ solid!important;\n\
+    line-height: 0.5em; /* hack to make element expand not further than height of contained .editable */\n\
+}\n\
+.attribute-view > td .editable {\n\
+    background: transparent;\n\
+    color: initial;\n\
+    border: none;\n\
+    text-overflow: ellipsis;\n\
+}\n\
+.attribute-view > td.value textarea {\n\
+  resize: none;\n\
+  max-height: 10em;\n\
+}\n\
+.attribute-view.selected {\n\
+    /*outline: 3px Highlight solid;*/\n\
+    background: Highlight;\n\
+    color: HighlightText;\n\
+}\n\
+.attribute-view .invalid {\n\
+    color: red !important;\n\
+}\n\
+.attribute-view .grayed {\n\
+    color: #aaaaaa !important;\n\
+}\n\
+.attribute-view .grayed.editable:focus {\n\
+    color: initial !important;\n\
+}');
+
   Vue.component('attribute-view', {
     props: {
       attribute: {
         type: Object,
-        default: function () { return { key: '', value: '', type: 'String', nonCommonKey: false, nonCommonValue: false }; }
+        default: function () {
+          return {
+            key: '',
+            value: '',
+            type: 'String',
+            nonCommonKey: false,
+            nonCommonValue: false
+          };
+        }
       },
       nonCommonDictionary: {
         type: Boolean,
@@ -46,7 +90,16 @@ define(['vue', 'debounce', 'vs-notify', './the-json-viewer', './typedvalueparser
         isTypeValid: true
       };
     },
+    computed: {
+      isNonCommonKey: function () {
+        return this.nonCommonDictionary || this.attribute.nonCommonKey;
+      },
+      isNonCommonValue: function () {
+        return this.nonCommonDictionary || this.attribute.nonCommonKey || this.attribute.nonCommonValue;
+      }
+    },
     mounted: function () {
+      // Set initial height of value element to match its content.
       this.adjustTextareaHeight(this.$refs.valueElement);
     },
     methods: {
@@ -152,12 +205,13 @@ define(['vue', 'debounce', 'vs-notify', './the-json-viewer', './typedvalueparser
       }
     },
     template:
-'<tr @click="onSelected">\n\
+'<tr @click="onSelected" \n\
+     class="attribute-view" >\n\
   <td class="key">\n\
     <input ref="keyElement" \n\
            :value="attribute.key" \n\
-           :class="[{ invalid: !isKeyValid, grayed: nonCommonDictionary || attribute.nonCommonKey }, \'editable\']" \n\
-           :disabled="(nonCommonDictionary || attribute.nonCommonKey) && !nonCommonEditable" \n\
+           :class="[{ invalid: !isKeyValid, grayed: isNonCommonKey }, \'editable\']" \n\
+           :disabled="isNonCommonKey && !nonCommonEditable" \n\
            @change="onKeyChanged" \n\
            @keyup.esc="blur" \n\
            type="text" \n\
@@ -167,34 +221,47 @@ define(['vue', 'debounce', 'vs-notify', './the-json-viewer', './typedvalueparser
   <td class="value">\n\
     <textarea v-if="attribute.type === \'JSON\'" \n\
               ref="valueElement" \n\
-              v-model:value="value" \n\
-              :class="[{ invalid: !isValueValid, grayed: nonCommonDictionary || attribute.nonCommonKey || attribute.nonCommonValue }, \'editable\']" \n\
-              :disabled="(nonCommonDictionary || attribute.nonCommonKey || attribute.nonCommonValue) && !nonCommonEditable" \n\
+              v-model:value="attribute.value" \n\
+              :class="[{ invalid: !isValueValid, grayed: isNonCommonValue }, \'editable\']" \n\
+              :disabled="isNonCommonValue && !nonCommonEditable" \n\
               @click="openJsonViewer" \n\
               @change="onValueChanged" \n\
               @keyup="onValueChanging" \n\
               @keyup.esc="blur" \n\
-              style="resize: none; max-height: 10em;" \n\
               spellcheck="false" />\n\
     <textarea v-else \n\
               ref="valueElement" \n\
               v-model:value="attribute.value" \n\
-              :class="[{ invalid: !isValueValid, grayed: nonCommonDictionary || attribute.nonCommonKey || attribute.nonCommonValue }, \'editable\']" \n\
-              :disabled="(nonCommonDictionary || attribute.nonCommonKey || attribute.nonCommonValue) && !nonCommonEditable" \n\
+              :class="[{ invalid: !isValueValid, grayed: isNonCommonValue }, \'editable\']" \n\
+              :disabled="isNonCommonValue && !nonCommonEditable" \n\
               @change="onValueChanged" \n\
               @keyup="onValueChanging" \n\
               @input="adjustTextareaHeight" \n\
-              style="resize: none; max-height: 10em;" \n\
               spellcheck="false" />\n\
   </td>\n\
   <td class="type">\n\
     <type-selector ref="typeSelectorElement" \n\
                    :attribute="attribute" \n\
-                   :class="{ invalid: !isTypeValid, grayed: attribute.nonCommonKey || attribute.nonCommonValue }" \n\
+                   :class="{ invalid: !isTypeValid, grayed: isNonCommonValue }" \n\
                    @change.native="onTypeChanged" />\n\
   </td>\n\
 </tr>'
   });
+
+  Style.addCSS(
+'table.table-view {\n\
+    background: white;\n\
+    border-collapse: collapse;\n\
+    overflow: hidden;\n\
+}\n\
+.table-view > tr > th:first-child,\n\
+.table-view th:first-child + th {\n\
+    position: relative;\n\
+    width: 50%;\n\
+}\n\
+.table-view > tr > .divider-vertical {\n\
+    height: 20em;\n\
+}');
 
   Vue.component('table-view', {
     props: {
@@ -276,12 +343,16 @@ define(['vue', 'debounce', 'vs-notify', './the-json-viewer', './typedvalueparser
       this.$refs.divider.setElements(this.$refs.left, this.$refs.right);
     },
     template:
-'<table>\n\
+'<table class="table-view">\n\
   <tr>\n\
-    <th ref="left" style="position: relative; width: 50%;">\n\
-      <divider-vertical ref="divider" :initial="40" :first="this.$refs.left" :second="this.$refs.right" style="height: 20em"/>\n\
+    <th ref="left">\n\
+      <divider-vertical ref="divider" \n\
+                        :initial="40" \n\
+                        :first="this.$refs.left" \n\
+                        :second="this.$refs.right" \n\
+                        class="divider-vertical" />\n\
     </th>\n\
-    <th ref="right" style="position: relative; width: 50%;"/>\n\
+    <th ref="right" />\n\
   </tr>\n\
   <attribute-view v-for="attribute in attributes" \n\
                   :key="attribute.key" \n\

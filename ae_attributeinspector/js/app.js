@@ -2,6 +2,7 @@
 TODO:
 - missing features:
   - changing key/value of non-common does not update grayed (esp. dict pane)
+  - changing grayed value of a grayed dict with two attributes ungrays both attributes although the second has not been changed
   - new attribute type DC with validation: (How to get dc instance? ObjectSpace.each_object(DynamicComponentsV1).first )
     dc = $dc_observers.get_class_by_version(entity)
     has_dc_attribute_dictionary: entity or its definition has "dynamic_attributes" dictionary

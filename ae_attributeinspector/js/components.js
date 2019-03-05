@@ -1,4 +1,11 @@
-define(['vue'], function (Vue) {
+define(['vue', './style'], function (Vue, Style) {
+
+  Style.addCSS(
+'/* Clip content: Injected div as workaround because elements with table layout ignore height and overflow. */\n\
+.clip-box {\n\
+    height:inherit;\n\
+    overflow: hidden;\n\
+}');
 
   Vue.component('clip-box', {
     template:
@@ -16,6 +23,26 @@ define(['vue'], function (Vue) {
 </div>'
   });
 
+  Style.addCSS(
+'.toolbar-button button {\n\
+    min-height: 1.25em; /* For Safari, which ignores all other/smaller button size properties. */\n\
+    line-height: 1.25em;\n\
+    min-width: 1.25em;\n\
+    padding: 0;\n\
+    overflow: hidden;\n\
+    text-align: center;\n\
+    vertical-align: middle;\n\
+}\n\
+.toolbar-button button > img {\n\
+    vertical-align: middle;\n\
+    width: 1em;\n\
+    height: 1em;\n\
+    padding: 0.125em;\n\
+}\n\
+.toolbar-button button:disabled > img {\n\
+    opacity: 0.3;\n\
+}');
+
   Vue.component('toolbar-button', {
     props: {
       image: {
@@ -31,7 +58,7 @@ define(['vue'], function (Vue) {
       }
     },
     template: 
-'<div class="vertical-centered">\n\
+'<div class="toolbar-button vertical-centered">\n\
   <button :title="title" \n\
           :disabled="disabled">\n\
     <img v-if="image" \n\
@@ -40,6 +67,20 @@ define(['vue'], function (Vue) {
   </button>\n\
 </div>'
   });
+
+  Style.addCSS(
+'.split-pane-vertical > div:first-child {\n\
+    position: absolute;\n\
+    left: 0;\n\
+    width: 50%;\n\
+    height: 100%;\n\
+}\n\
+.split-pane-vertical > div:first-child + div {\n\
+    position: absolute;\n\
+    right: 0;\n\
+    width: 50%;\n\
+    height: 100%;\n\
+}');
 
   Vue.component('split-pane-vertical', {
     props: {
@@ -56,16 +97,32 @@ define(['vue'], function (Vue) {
       this.$refs.divider.setElements(this.$refs.leftPane, this.$refs.rightPane);
     },
     template:
-'<div>\n\
-  <div ref="leftPane" style="position: absolute; left: 0; width: 50%; height: 100%;">\n\
+'<div class="split-pane-vertical">\n\
+  <div ref="leftPane">\n\
     <slot name="left" /> \n\
     <divider-vertical ref="divider" :initial="initial"/>\n\
   </div>\n\
-  <div ref="rightPane" style="position: absolute; right: 0; width: 50%; height: 100%;">\n\
+  <div ref="rightPane">\n\
     <slot name="right" />\n\
   </div>\n\
 </div>'
   });
+
+  Style.addCSS(
+'.divider-vertical {\n\
+    position: absolute;\n\
+    z-index: 1;\n\
+    top: 0;\n\
+    right: 0;\n\
+    cursor: col-resize;\n\
+    width: 0.5em;\n\
+    min-width: 0.5em;\n\
+    height: 100%;\n\
+    margin-right: -0.25em;\n\
+    background: transparent;\n\
+    border: none;\n\
+    user-select: none;\n\
+}');
 
   Vue.component('divider-vertical', {
     props: {
@@ -142,7 +199,7 @@ define(['vue'], function (Vue) {
     template:
 '<button ref="divider" \n\
          @mousedown="mousedown" \n\
-         style="position: absolute; z-index: 1; top: 0; right: 0; cursor: col-resize; width: 0.5em; min-width: 0.5em; height: 100%; margin-right: -0.25em; background: transparent; border: none; user-select: none;"/>'
+         class="divider-vertical"/>'
   });
 
 });
