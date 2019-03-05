@@ -259,8 +259,8 @@ define(['vue', 'debounce', 'vs-notify', './the-json-viewer', './typedvalueparser
     position: relative;\n\
     width: 50%;\n\
 }\n\
-.table-view > tr > .divider-vertical {\n\
-    height: 20em;\n\
+.table-view > tr .divider-vertical {\n\
+    height: 100em;\n\
 }');
 
   Vue.component('table-view', {
