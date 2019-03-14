@@ -20,7 +20,7 @@ This inspector tries to keep the user interface minimal and very efficient: Just
 
 The dialog shows the attribute dictionaries of the currently selected drawing element. Use SketchUp's selection tool to select another elements.
 
-Click the <kbd>+</kbd>, <kbd>‒</kbd> buttons on the left pane to add or remove a attribute dictionary, and click <kbd>+</kbd>, <kbd>‒</kbd> on the right pane to add or remove an attribute. Since attribute dictionaries are entities, they can themselves have attribute dictionaries. You can also create such nested dictionaries by selecting the parent dictionary in the and clicking the <kbd>└+</kbd> button.
+Click the <kbd>+</kbd>, <kbd>‒</kbd> buttons on the left pane to add or remove an attribute dictionary, and click <kbd>+</kbd>, <kbd>‒</kbd> on the right pane to add or remove an attribute. Since attribute dictionaries are entities, they can themselves have attribute dictionaries. You can also create such nested dictionaries by selecting the parent dictionary in the left pane and clicking the <kbd>└+</kbd> button.
 
 To select other types of entities, choose the type from the dropdown and do:
 
