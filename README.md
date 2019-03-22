@@ -1,6 +1,6 @@
 <img alt="logo" src="./src/ae_attribute_inspector/images/icon.png" align="left" /><h1>Attribute Inspector</h1>
 
-<h2>A viewer and editor for entity and model attributes</h2>
+<h2>A viewer and editor for SketchUp entity and model attributes</h2>
 
 This is a viewer for entity and model attributes. [Attributes](http://ruby.sketchup.com/Sketchup/AttributeDictionary.html) in SketchUp are additional pieces of information that can be stored with entities like groups, components, scenes. For example one can store a part number, unit price, weight or other annotations with an entity and read or modify that information later. All attributes are included in SketchUp's report feature.
 
