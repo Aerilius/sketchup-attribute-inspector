@@ -70,9 +70,9 @@ module.exports = {
        //Vue: 'vue',
        Vue: ['vue/dist/vue.esm.js', 'default']
     }),
-    //new StyleLintPlugin({
-    //  files: ['**/*.{vue,htm,html,css,sss,less,scss,sass}']
-    //})
+    new StyleLintPlugin({
+      files: ['**/*.{vue,htm,html,css,sss,less,scss,sass}']
+    })
   ]
 }
 
@@ -85,8 +85,8 @@ if (process.env.NODE_ENV === 'production') {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
     }),
-    new webpack.LoaderOptionsPlugin({
-      minimize: false//true
+    new webpack.optimize.UglifyJsPlugin({
+      minimize: true
     })
   ])
 }
