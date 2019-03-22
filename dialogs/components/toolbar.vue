@@ -1,17 +1,11 @@
 <template>
   <div class="left vertical-centered-parent">
-    <slot/>
+    <slot />
   </div>
 </template>
 
 <script>
-import Vue from 'vue'
-import ToolbarButton from './toolbar-button.vue'
-
-export default {
-  components: {ToolbarButton}
-}
+export default {}
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

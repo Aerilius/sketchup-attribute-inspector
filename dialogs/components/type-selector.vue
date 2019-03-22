@@ -1,8 +1,14 @@
 <template>
-  <select v-model:value="attribute.type">
-  <option v-for="attributetype in attributetypes" 
-          :key="attributetype" 
-          :value="attributetype">{{getDisplayName(attributetype)}}</option>
+  <select
+    v-model="attribute.type"
+  >
+    <option
+      v-for="attributetype in attributetypes"
+      :key="attributetype"
+      :value="attributetype"
+    >
+      {{ getDisplayName(attributetype) }}
+    </option>
   </select>
 </template>
 
@@ -14,17 +20,18 @@ export default {
   props: {
     attribute: {
       type: Object,
-      default: function () { return { type: 'String' }; }
-    }
+      default () {
+        return { type: 'String' }
+      },
+    },
   },
-  data: function () {
+  data () {
     return {
       getDisplayName: TypedValueParser.getDisplayName,
-      attributetypes: TypedValueParser.TYPES
-    };
-  }
+      attributetypes: TypedValueParser.TYPES,
+    }
+  },
 }
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

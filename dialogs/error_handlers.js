@@ -1,12 +1,18 @@
 import Vue from 'vue'
 import Bridge from './bridge.js'
 
-Vue.config.errorHandler = function (error, node, info) {
+Vue.config.errorHandler = function(error, node, info) {
   console.log('errorHandler', error, node, info)
   Bridge.error(error)
 }
 
-window.onerror = function (messageOrEvent, source, lineNumber, columnNumber, errorObject) {
+window.onerror = function(
+  messageOrEvent,
+  source,
+  lineNumber,
+  columnNumber,
+  errorObject
+) {
   console.log([messageOrEvent, source, lineNumber, columnNumber, errorObject])
   if (!errorObject) {
     errorObject = new Error()

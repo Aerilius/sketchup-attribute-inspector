@@ -1,22 +1,34 @@
 <template>
   <div>
-    <vs-notify group="alert" position="top center" transition="ntf-top" />
+    <vs-notify
+      group="alert"
+      position="top center"
+      transition="ntf-top"
+    />
     <VsPrompt />
     <TheJsonViewer />
-    <TheEntityPane ref="theEntityPane" 
-                     @selectedEntity="selectedEntity" 
-                     style="display: block; width: 100%; height: 2.5em; overflow: hidden;" />
-    <SplitPaneVertical :initial="30" 
-                         style="width: 100%; top: 2.5em; bottom: 0; position: absolute;">
-      <TheDictionaryPane slot="left" 
-                           ref="theDictionaryPane" 
-                           :selectedEntityId="selectedEntityId" 
-                           @selectedDictionary="selectedDictionary" 
-                           style="width: 100%; height: 100%; margin-top: 1px;" />
-      <TheAttributePane slot="right" 
-                          ref="theAttributePane" 
-                          :selectedDictionary="selectedPath" 
-                          style="width: 100%; height: 100%; margin-top: 1px;" />
+    <TheEntityPane
+      ref="theEntityPane"
+      style="display: block; width: 100%; height: 2.5em; overflow: hidden;"
+      @selectedEntity="selectedEntity"
+    />
+    <SplitPaneVertical
+      :initial="30"
+      style="width: 100%; top: 2.5em; bottom: 0; position: absolute;"
+    >
+      <TheDictionaryPane
+        slot="left"
+        ref="theDictionaryPane"
+        :selected-entity-id="selectedEntityId"
+        style="width: 100%; height: 100%; margin-top: 1px;"
+        @selectedDictionary="selectedDictionary"
+      />
+      <TheAttributePane
+        slot="right"
+        ref="theAttributePane"
+        :selected-dictionary="selectedPath"
+        style="width: 100%; height: 100%; margin-top: 1px;"
+      />
     </SplitPaneVertical>
   </div>
 </template>
@@ -31,38 +43,42 @@ import SplitPaneVertical from './split-pane-vertical.vue'
 import TheDictionaryPane from './the-dictionary-pane.vue'
 import TheAttributePane from './the-attribute-pane.vue'
 
-// TODO: export default Vue.extend({
-// or    export default Vue.component({
 export default {
-  name: 'app',
-  components: {VsPrompt, VsPrompt, TheJsonViewer, TheEntityPane, SplitPaneVertical, TheDictionaryPane, TheAttributePane},
-  data () {
+  name: 'App',
+  components: {
+    VsPrompt,
+    TheJsonViewer,
+    TheEntityPane,
+    SplitPaneVertical,
+    TheDictionaryPane,
+    TheAttributePane,
+  },
+  data() {
     return {
       selectedEntityId: null,
-      selectedPath: []
+      selectedPath: [],
     }
   },
-  mounted () {
+  mounted() {
     this.refresh()
   },
   methods: {
-    refresh () {
+    refresh() {
       /*this.$refs.theEntityPane.refresh()*/
     },
-    selectedEntity (entityId) {
+    selectedEntity(entityId) {
       console.log('app selectedEntity', entityId)
       this.selectedEntityId = entityId
       this.$refs.theDictionaryPane.refresh()
     },
-    selectedDictionary (dictionaryPath) {
+    selectedDictionary(dictionaryPath) {
       console.log('app selectedDictionary', dictionaryPath)
       this.selectedPath = dictionaryPath
       // Timeout so that changed property can be propagated into the-attribute-pane.
       Vue.nextTick(this.$refs.theAttributePane.refresh)
-    }
+    },
   },
 }
 </script>
 
-<style lang="scss">
-</style>
+<style lang="scss"></style>

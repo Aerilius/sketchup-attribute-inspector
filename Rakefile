@@ -17,8 +17,7 @@ task :build_rbz do
   version = AE::AttributeInspector::VERSION
   # Configuration
   files_to_exclude = %w{
-    ae_attribute_inspector/js/bridge_debug_helper.js
-    ae_attribute_inspector/js/bridge_mock.js
+    ae_attribute_inspector/js/main.js.map
   }
   # Compressing
   create_zip_archive("#{project_name}_#{version}.rbz", 'src', include: '**/*', exclude: files_to_exclude)
