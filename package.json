@@ -1,0 +1,95 @@
+{
+  "name": "ae_attribute_inspector",
+  "version": "3.0.0",
+  "description": "A viewer and editor for SketchUp entity and model attributes.",
+  "author": "Aerilius",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "package": "bundle exec rake build_rbz",
+    "release": "npm run build && npm run package",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
+    "lint": "eslint **/*.js --ignore-pattern node_modules/"
+  },
+  "dependencies": {
+    "debounce": "^1.2.0",
+    "vue": "^2.6.10",
+    "vue-json-viewer": "^2.1.0",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "devDependencies": {
+    "babel-core": "^6.0.0",
+    "babel-loader": "^6.0.0",
+    "babel-preset-env": "^1.5.1",
+    "cross-env": "^3.0.0",
+    "css-loader": "^0.25.0",
+    "eslint": "^5.15.3",
+    "eslint-config-prettier": "^4.1.0",
+    "eslint-plugin-prettier": "^3.0.1",
+    "eslint-plugin-vue": "^5.2.2",
+    "file-loader": "^0.9.0",
+    "node-sass": "^4.5.0",
+    "sass-loader": "^5.0.1",
+    "stylelint": "^9.10.1",
+    "stylelint-webpack-plugin": "^0.10.5",
+    "vue-loader": "^12.1.0",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
+  },
+  "babel": {
+    "presets": [
+      ["env", { "modules": false }]
+    ]
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "eslint:recommended",
+      "plugin:vue/recommended",
+      "plugin:prettier/recommended"
+    ]
+  },
+  "stylelint": {
+    "rules": {
+      "block-no-empty": null,
+      "color-no-invalid-hex": true,
+      "comment-empty-line-before": [
+        "always",
+        {
+          "ignore": [
+            "stylelint-commands",
+            "after-comment"
+          ]
+        }
+      ],
+      "declaration-colon-space-after": "always",
+      "indentation": [
+        "tab",
+        {
+          "except": [
+            "value"
+          ]
+        }
+      ],
+      "max-empty-lines": 2,
+      "rule-empty-line-before": [
+        "always",
+        {
+          "except": [
+            "first-nested"
+          ],
+          "ignore": [
+            "after-comment"
+          ]
+        }
+      ],
+      "unit-whitelist": [
+        "em",
+        "rem",
+        "%",
+        "s"
+      ]
+    }
+  }
+}
