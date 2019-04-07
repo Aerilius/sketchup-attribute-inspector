@@ -3,7 +3,7 @@
     role="tree"
     tabindex="0"
   >
-    <tree-view-node
+    <TreeViewNode
       v-for="node in children"
       :key="node.name"
       :parent-path="parentPath"

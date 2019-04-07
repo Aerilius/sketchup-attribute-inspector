@@ -17,10 +17,8 @@
     <div
       class="tree-view-node-label"
       :class="{ grayed: nonCommonDictionary }"
-    >
-      {{ name }}
-    </div>
-    <tree-view-subtree
+    >{{ name }}</div>
+    <TreeViewSubtree
       v-if="children"
       :children="children"
       :parent-path="path"
@@ -30,8 +28,15 @@
 </template>
 
 <script>
+import TreeViewSubtree from './tree-view-subtree.vue'
+
 export default {
-  components: {},
+  components: {TreeViewSubtree},
+  beforeCreate () {
+    // Resolve circular import at runtime
+    // (https://vuejs.org/v2/guide/components-edge-cases.html#Circular-References-Between-Components)
+    this.$options.components.TreeViewSubtree = require('./tree-view-subtree.vue').default
+  },
   props: {
     name: {
       type: String,
@@ -84,4 +89,13 @@ export default {
 }
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+li .tree-view-node-label {
+  display: block;
+  border: dotted 1px #eee;
+  margin-top: -1px; /* for collapsing dotted borders */
+  padding: 0.2em 0.2em;
+  white-space: pre;
+  min-height: 1em; /* to prevent zero height box when empty text */
+}
+</style>
