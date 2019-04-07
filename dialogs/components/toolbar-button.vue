@@ -1,5 +1,5 @@
 <template>
-  <div class="vertical-centered">
+  <div class="toolbar-button vertical-centered">
     <button
       :title="title"
       :disabled="disabled"
@@ -34,8 +34,8 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-button {
+<style lang="scss">
+.toolbar-button button {
   min-height: 1.25em; /* For Safari, which ignores all other/smaller button size properties. */
   line-height: 1.25em;
   min-width: 1.25em;
@@ -44,13 +44,13 @@ button {
   text-align: center;
   vertical-align: middle;
 }
-button > img {
+.toolbar-button button > img {
   vertical-align: middle;
   width: 1em;
   height: 1em;
   padding: 0.125em;
 }
-button:disabled > img {
+.toolbar-button button:disabled > img {
   opacity: 0.3;
 }
 </style>
