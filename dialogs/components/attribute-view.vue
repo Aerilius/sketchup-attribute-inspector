@@ -284,6 +284,7 @@ function getDefaultValueForType(type) {
 .attribute-view > td {
   border: 1px #eeeeee /*ThreeDShadow*/ solid !important;
   line-height: 0.5em; /* hack to make element expand not further than height of contained .editable */
+  vertical-align: middel;
 }
 .attribute-view > td .editable {
   background: transparent;
