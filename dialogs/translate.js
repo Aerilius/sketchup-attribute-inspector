@@ -2,6 +2,7 @@ export class Translate {
   constructor() {
     /* Object containing all translation strings. */
     this.mapping = {}
+    this.get = this.get.bind(this)
   }
 
   load(mapping) {
