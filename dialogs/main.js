@@ -12,7 +12,6 @@ new Vue({
 })
 
 Bridge.get('get_translations').then((translations) => {
-  console.log(translations)
   TRANSLATE.load(translations)
-  TRANSLATE.html(document.body)
+  //TRANSLATE.html(document.body)
 })

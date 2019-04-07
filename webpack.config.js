@@ -6,6 +6,12 @@ const StyleLintPlugin = require('stylelint-webpack-plugin');
 module.exports = {
   mode: 'development',
   entry: './dialogs/main.js',
+  resolve: {
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js'
+    },
+    extensions: ['.js', '.vue', '.json'] // Allows to import without file extensions
+  },
   output: {
     path: path.resolve(__dirname, './src/ae_attribute_inspector/js/'),
     publicPath: '', // Assumes HTML sets <base> with href to the `ui` directory.
@@ -15,7 +21,24 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        use: 'vue-loader'
+        loader: 'vue-loader',
+        options: {
+          loaders: {
+            // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
+            // the "scss" and "sass" values for the lang attribute to the right configs here.
+            // other preprocessors should work out of the box, no loader config like this necessary.
+            'scss': [
+              'vue-style-loader',
+              'css-loader',
+              'sass-loader'
+            ],
+            'sass': [
+              'vue-style-loader',
+              'css-loader',
+              'sass-loader?indentedSyntax'
+            ]
+          }
+        }
       },
       {
         test: /\.vue$/,
@@ -60,12 +83,6 @@ module.exports = {
       }*/
     ]
   },
-  /*resolve: {
-    alias: {
-    // ? extensions: ['.ts', '.js', '.vue', '.json'],
-      'vue$': 'vue/dist/vue.esm.js'
-    }
-  },*/
   devServer: {
     historyApiFallback: {
       index: 'src/ae_attribute_inspector/html/app.html'
@@ -78,10 +95,10 @@ module.exports = {
   devtool: '#eval-source-map',
   plugins: [
     // make sure to include the plugin
-    new webpack.ProvidePlugin({
-       //Vue: 'vue',
-       Vue: ['vue/dist/vue.esm.js', 'default']
-    }),
+    //new webpack.ProvidePlugin({
+    //   //Vue: 'vue',
+    //   Vue: ['vue/dist/vue.esm.js', 'default']
+    //}),
     new VueLoaderPlugin(),
     //new StyleLintPlugin({
     //  files: ['**/*.{vue,htm,html,css,sss,less,scss,sass}']
@@ -96,9 +113,9 @@ if (process.env.NODE_ENV === 'production') {
   // http://vue-loader.vuejs.org/en/workflow/production.html
   module.exports.plugins = (module.exports.plugins || []).concat([
     // https://webpack.js.org/guides/production/#specify-the-environment
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production')
-    })
+    /*new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify('production') // Webpack < 4
+    })*/
   ])
   module.exports.optimization = Object.assign({}, module.exports.optimization, {
     minimize: true,

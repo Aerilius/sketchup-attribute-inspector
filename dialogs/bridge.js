@@ -11430,50 +11430,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 // TODO: remove requirement to Bridge
 
-function returnMockResult(message, mockCallbacks, resolve, reject) {
+function returnMockResult(message, mockCallbacks, callback) {
   var result = mockCallbacks[message.name];
   if (typeof result.then === 'function') {
     // Promise for return value
     result.then(function (result) {
       console.log('[' + message.name + '] >> ' + JSON.stringify(result));
-      resolve(result);
+      callback({ success: true, parameters: [result] });
     }, function (reason) {
       console.log('[' + message.name + '] >> (rejected) ' + JSON.stringify(reason));
-      reject(reason);
+      callback({ success: false, parameters: [reason] });
     });
   } else {
     // Return value
-    if (typeof resolve === 'function') resolve(result);
+    if (typeof callback === 'function') callback({ success: true, parameters: [result] });
     console.log('>> ' + JSON.stringify(result));
   }
 }
 
-function runMockCallbackFunction(message, mockCallbacks, resolve, reject) {
+function runMockCallbackFunction(message, mockCallbacks, callback) {
   try {
     // Resolver function that returns return value.
     var result = mockCallbacks[message.name].apply(undefined, message.parameters);
-    if (typeof resolve === 'function') resolve(result);
+    if (typeof callback === 'function') callback({ success: true, parameters: [result] });
     console.log('>> ' + JSON.stringify(result));
   } catch (error) {
-    if (typeof reject === 'function') {
-      reject(error);
+    if (typeof callback === 'function') {
+      callback({ success: false, parameters: [error] });
     } else {
       console.error(error);
     }
   }
 }
 
-function simulateGetWithPrompt(request, resolve, reject) {
+function simulateGetWithPrompt(request, callback) {
   // Show the request as prompt.
   var question = 'Give a return value in JSON notation:',
       resultString = window.prompt(request + '\n' + question);
   if (typeof resultString === 'string') {
     var result = JSON.parse(resultString);
     // Resolve the query and return the result to it.
-    if (typeof resolve === 'function') resolve(result);
+    if (typeof callback === 'function') callback({ success: true, parameters: [result] });
   } else {
     // Otherwise reject the query.
-    if (typeof reject === 'function') reject('rejected');
+    if (typeof callback === 'function') callback({ success: false, parameters: ['rejected'] });
   }
 }
 
@@ -11505,7 +11505,7 @@ var BrowserPromptRequestHandler = function (_RequestHandler) {
     }
   }, {
     key: 'send',
-    value: function send(message, resolve, reject) {
+    value: function send(message, callback) {
       var request = 'skp:' + message.name + '(' + JSON.stringify(message.parameters).slice(1, -1) + ')';
       if (message.expectsCallback) {
         // Respond to the request and call the callback.
@@ -11513,12 +11513,12 @@ var BrowserPromptRequestHandler = function (_RequestHandler) {
           // Resolve the request automatically with mock data.
           console.log(request);
           if (typeof this.mockCallbacks[message.name] !== 'function') {
-            returnMockResult(message, this.mockCallbacks, resolve, reject);
+            returnMockResult(message, this.mockCallbacks, callback);
           } else {
-            runMockCallbackFunction(message, this.mockCallbacks, resolve, reject);
+            runMockCallbackFunction(message, this.mockCallbacks, callback);
           }
         } else {
-          simulateGetWithPrompt(request, resolve, reject);
+          simulateGetWithPrompt(request, callback);
         }
       } else {
         // Just log the call.
