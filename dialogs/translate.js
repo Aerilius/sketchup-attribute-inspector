@@ -5,7 +5,7 @@ export class Translate {
   }
 
   load(mapping) {
-    Object.extend(this.mapping, mapping)
+    Object.assign(this.mapping, mapping)
   }
 
   /* Method to access a single translation. */
