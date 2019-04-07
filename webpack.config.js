@@ -1,8 +1,10 @@
 const path = require('path')
 const webpack = require('webpack')
+const { VueLoaderPlugin } = require('vue-loader')
 const StyleLintPlugin = require('stylelint-webpack-plugin');
 
 module.exports = {
+  mode: 'development',
   entry: './dialogs/main.js',
   output: {
     path: path.resolve(__dirname, './src/ae_attribute_inspector/js/'),
@@ -13,22 +15,18 @@ module.exports = {
     rules: [
       {
         test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-            // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
-            // the "scss" and "sass" values for the lang attribute to the right configs here.
-            // other preprocessors should work out of the box, no loader config like this necessary.
-            'scss': 'vue-style-loader!css-loader!sass-loader',
-            'sass': 'vue-style-loader!css-loader!sass-loader?indentedSyntax'
-          }
-          // other vue-loader options go here
-        }
+        use: 'vue-loader'
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader'
       },
       {
         test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /node_modules/
+        use: {
+          loader: 'babel-loader',
+          //include: [resolve('src'), resolve('test'), resolve('node_modules/vue2-collapse')]
+        }
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -44,15 +42,30 @@ module.exports = {
           'vue-style-loader',
           'css-loader'
         ]
-      }
+      }/*,
+      {
+        test: /\.scss$/,
+        use: [
+          'vue-style-loader',
+          'css-loader',
+          {
+            loader: 'sass-loader',
+            // global data for all components
+            // this can be read from a scss file
+            options: {
+              data: '$color: red;'
+            }
+          }
+        ]
+      }*/
     ]
   },
-  resolve: {
+  /*resolve: {
     alias: {
     // ? extensions: ['.ts', '.js', '.vue', '.json'],
       'vue$': 'vue/dist/vue.esm.js'
     }
-  },
+  },*/
   devServer: {
     historyApiFallback: {
       index: 'src/ae_attribute_inspector/html/app.html'
@@ -65,18 +78,19 @@ module.exports = {
   devtool: '#eval-source-map',
   plugins: [
     // make sure to include the plugin
-    //new VueLoaderPlugin(),
     new webpack.ProvidePlugin({
        //Vue: 'vue',
        Vue: ['vue/dist/vue.esm.js', 'default']
     }),
-    new StyleLintPlugin({
-      files: ['**/*.{vue,htm,html,css,sss,less,scss,sass}']
-    })
+    new VueLoaderPlugin(),
+    //new StyleLintPlugin({
+    //  files: ['**/*.{vue,htm,html,css,sss,less,scss,sass}']
+    //})
   ]
 }
 
 if (process.env.NODE_ENV === 'production') {
+  module.exports.mode = 'production'
   // https://webpack.js.org/guides/production/#source-mapping
   module.exports.devtool = '#source-map'
   // http://vue-loader.vuejs.org/en/workflow/production.html
@@ -84,9 +98,11 @@ if (process.env.NODE_ENV === 'production') {
     // https://webpack.js.org/guides/production/#specify-the-environment
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': JSON.stringify('production')
-    }),
-    new webpack.optimize.UglifyJsPlugin({
-      minimize: true
     })
   ])
+  module.exports.optimization = Object.assign({}, module.exports.optimization, {
+    minimize: true,
+    moduleIds: 'named',
+    chunkIds: 'named'
+  });
 }

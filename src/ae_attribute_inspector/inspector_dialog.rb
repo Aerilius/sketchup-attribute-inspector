@@ -68,9 +68,8 @@ module AE
         # Add a Bridge to handle JavaScript-Ruby communication.
         Bridge.decorate(dialog)
 
-        dialog.on('translate') {|action_context|
-          # Translate.
-          TRANSLATE.webdialog(dialog)
+        dialog.on('get_translations') {|action_context|
+          action_context.resolve(TRANSLATE.to_hash)
         }
 
         # Callbacks

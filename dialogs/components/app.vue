@@ -64,7 +64,7 @@ export default {
   },
   methods: {
     refresh() {
-      /*this.$refs.theEntityPane.refresh()*/
+      this.$refs.theEntityPane.refresh()
     },
     selectedEntity(entityId) {
       console.log('app selectedEntity', entityId)

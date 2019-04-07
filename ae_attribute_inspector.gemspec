@@ -1,7 +1,7 @@
 # coding: utf-8
 lib = File.expand_path('../src', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'ae_attribute_inspector/version'
+require_relative 'src/ae_attribute_inspector/version.rb'
 
 Gem::Specification.new do |spec|
   spec.name          = 'ae_attribute_inspector'
@@ -9,9 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Andreas Eisenbarth']
   spec.email         = ['aerilius@gmail.com']
 
-  spec.summary       = %q{A viewer and editor for entity and model attributes.}
+  spec.summary       = %q{A viewer and editor for SketchUp entity and model attributes.}
   spec.description   = %q{This is a viewer for entity and model attributes. Attributes in SketchUp are additional pieces of information that can be stored with entities like groups, components, scenes. For example one can store a part number, unit price, weight or other annotations with an entity and read or modify that information later. All attributes are included in SketchUp's report feature.}
-  spec.homepage      = 'https://github.com/Aerilius/sketchup-attribute-inspector/.'
+  spec.homepage      = 'https://github.com/Aerilius/sketchup-attribute-inspector'
   spec.license       = 'MIT'
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'
