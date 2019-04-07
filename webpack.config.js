@@ -1,17 +1,11 @@
 const path = require('path')
 const webpack = require('webpack')
 const { VueLoaderPlugin } = require('vue-loader')
-const StyleLintPlugin = require('stylelint-webpack-plugin');
+//const StyleLintPlugin = require('stylelint-webpack-plugin');
 
 module.exports = {
   mode: 'development',
   entry: './dialogs/main.js',
-  resolve: {
-    alias: {
-      'vue$': 'vue/dist/vue.esm.js'
-    },
-    extensions: ['.js', '.vue', '.json'] // Allows to import without file extensions
-  },
   output: {
     path: path.resolve(__dirname, './src/ae_attribute_inspector/js/'),
     publicPath: '', // Assumes HTML sets <base> with href to the `ui` directory.
@@ -19,27 +13,6 @@ module.exports = {
   },
   module: {
     rules: [
-      {
-        test: /\.vue$/,
-        loader: 'vue-loader',
-        options: {
-          loaders: {
-            // Since sass-loader (weirdly) has SCSS as its default parse mode, we map
-            // the "scss" and "sass" values for the lang attribute to the right configs here.
-            // other preprocessors should work out of the box, no loader config like this necessary.
-            'scss': [
-              'vue-style-loader',
-              'css-loader',
-              'sass-loader'
-            ],
-            'sass': [
-              'vue-style-loader',
-              'css-loader',
-              'sass-loader?indentedSyntax'
-            ]
-          }
-        }
-      },
       {
         test: /\.vue$/,
         loader: 'vue-loader'
@@ -64,30 +37,30 @@ module.exports = {
         use: [
           'vue-style-loader',
           'css-loader'
-        ]
-      }/*,
+        ],
+      },
       {
         test: /\.scss$/,
         use: [
           'vue-style-loader',
           'css-loader',
-          {
-            loader: 'sass-loader',
-            // global data for all components
-            // this can be read from a scss file
-            options: {
-              data: '$color: red;'
-            }
-          }
-        ]
-      }*/
+          'sass-loader'
+        ],
+      }
     ]
+  },
+  resolve: {
+    alias: {
+      'vue$': 'vue/dist/vue.esm.js'
+    },
+    extensions: ['.js', '.vue', '.json'] // Allows to import without file extensions
   },
   devServer: {
     historyApiFallback: {
       index: 'src/ae_attribute_inspector/html/app.html'
     },
-    noInfo: true
+    noInfo: true,
+    overlay: true
   },
   performance: {
     hints: false
@@ -95,10 +68,10 @@ module.exports = {
   devtool: '#eval-source-map',
   plugins: [
     // make sure to include the plugin
-    //new webpack.ProvidePlugin({
-    //   //Vue: 'vue',
-    //   Vue: ['vue/dist/vue.esm.js', 'default']
-    //}),
+    new webpack.ProvidePlugin({
+       //Vue: 'vue',
+       Vue: ['vue/dist/vue.esm.js', 'default']
+    }),
     new VueLoaderPlugin(),
     //new StyleLintPlugin({
     //  files: ['**/*.{vue,htm,html,css,sss,less,scss,sass}']
