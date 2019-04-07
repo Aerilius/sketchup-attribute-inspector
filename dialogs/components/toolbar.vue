@@ -1,5 +1,5 @@
 <template>
-  <div class="left vertical-centered-parent">
+  <div class="toolbar left vertical-centered-parent">
     <slot />
   </div>
 </template>
@@ -8,4 +8,8 @@
 export default {}
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.toolbar {
+  margin-right: 0.5em;
+}
+</style>
