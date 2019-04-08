@@ -72,16 +72,18 @@ end
       # @return [AE::AttributeInspector] self
       def select(*entities)
         entities.flatten!
-        entities = entities.grep(Sketchup::Entity).concat(entities.grep(Sketchup::Model))
+        entities = filter_supported_entities(entities)
         if entities.empty?
           model = Sketchup.active_model
           entities_to_select = (@mode == Mode::Drawingelement) ? [model] : []
-          return self if entities_to_select == @selected_entities # No need to update dialog if selection did not change.
+          # No need to update dialog if selection did not change.
+          return self if entities_to_select == @selected_entities
           switch_to_model(model) if model != @model
           @selected_entities = entities_to_select
         elsif entities.length == 1 && entities.first.is_a?(Sketchup::Model)
           model = entities.first
           entities_to_select = [model]
+          # No need to update dialog if selection did not change.
           return self if entities_to_select == @selected_entities
           switch_to_model(model) if model != @model
           switch_to_mode(Mode.from_entity(entities.first))
@@ -89,6 +91,7 @@ end
         else
           model = entities.first.model
           entities_to_select = entities.select {|e| e.model == model}
+          # No need to update dialog if selection did not change.
           return self if entities_to_select == @selected_entities
           switch_to_model(model) if model != @model
           switch_to_mode(Mode.from_entity(entities.first))
@@ -168,6 +171,10 @@ end
         # Session storage of settings of the dialog.
         @settings = settings
         @dialog            = create_dialog()
+        # The entities currently displayed in the dialog.
+        # This ensures that actions on attributes in the dialog will only 
+        # affect the entities that are actually reflected in the dialog even if
+        # the dialog is out of sync with the selection in the viewport.
         @dialog_entities   = []
         #
         model = Sketchup.active_model if model.nil?
@@ -183,6 +190,11 @@ end
         self.model=(model)
         # Then the current selection in the current model.
         select_current() # TODO: redundant because done in model=
+      end
+
+
+      def filter_supported_entities(entities)
+        return entities.grep(Sketchup::Entity).concat(entities.grep(Sketchup::Model))
       end
 
 
