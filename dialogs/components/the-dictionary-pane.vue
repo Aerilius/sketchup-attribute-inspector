@@ -100,7 +100,7 @@ export default {
       // In Chromium, disabled button still triggers click event.
       if (!this.dictionaries) return
       let self = this
-      this.$prompt(tr('Choose a new dictionary name')).then(function(name) {
+      this.$prompt(this.tr('Choose a new dictionary name')).then(function(name) {
         let parentPath = self.selectedPath.slice(0, -1)
         let newPath = parentPath.concat(name)
         Bridge.get('add_dictionary', newPath).then(
@@ -127,7 +127,7 @@ export default {
       if (this._isEmpty(this.dictionaries) || this._isEmpty(this.selectedPath))
         return
       let self = this
-      this.$prompt(tr('Choose a new dictionary name')).then(function(name) {
+      this.$prompt(this.tr('Choose a new dictionary name')).then(function(name) {
         let newPath = self.selectedPath.concat(name)
         Bridge.get('add_dictionary', newPath).then(
           function() {
@@ -162,7 +162,7 @@ export default {
         return
       let self = this
       let oldName = self.selectedPath.slice(-1)[0]
-      this.$prompt(tr('Choose a new dictionary name'), oldName).then(function(
+      this.$prompt(this.tr('Choose a new dictionary name'), oldName).then(function(
         newName
       ) {
         let parentPath = self.selectedPath.slice(0, -1)
@@ -176,7 +176,7 @@ export default {
         if (subtreeHasChild(subtree, newName)) {
           self.$notify(
             'alert',
-            tr(
+            this.tr(
               'A dictionary with the same name already exists. Please choose a different name.'
             ),
             'error'
