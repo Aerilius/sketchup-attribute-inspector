@@ -39,9 +39,7 @@ module AE
 
       def refresh
         if @dialog && @dialog.visible?
-          @dialog.get('refresh').then{
-            @dialog_entities = @selected_entities
-          }
+          @dialog.call('refresh')
         end
       end
 
@@ -88,6 +86,10 @@ module AE
             :id => (!@selected_entities.empty?) ? @selected_entities.map(&:object_id).join('.') : nil,
             :related => get_related(*@selected_entities)
           })
+          # When dialog has completed displaying @selected_entities,
+          # update @dialog_entities so that actions on attribute can be
+          # applied to the new selection.
+          @dialog_entities = @selected_entities
         }
 
         # Select an entity by id.

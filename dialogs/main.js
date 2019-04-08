@@ -1,14 +1,16 @@
 import Vue from 'vue'
 import Bridge from './bridge.js'
 //import './error_handlers.js'
-import app from './components/app.vue'
+import App from './components/app.vue'
 import TRANSLATE from './translate.js'
 
-window.refresh = app.refresh
-
-new Vue({
+const app = new Vue({
   el: '#app',
-  render: h => h(app),
+  render: h => h(App),
+  mounted: function () {
+    let appInstance = this.$children[0]
+    global.refresh = appInstance.refresh.bind(appInstance)
+  },
 })
 
 Bridge.get('get_translations').then((translations) => {
