@@ -4,7 +4,7 @@
     style="position: absolute; width: 100%; height: 100%; z-index: 100; background-color: Window;"
     @keyup.esc="close"
   >
-    <Toolbar style="width: 100%; height: 2.5em; white-space: pre;">
+    <Toolbar style="width: 100%; height: 2.5em">
       <ToolbarButton
         style="width: 0;"
         @click.native="activeTab = 0"

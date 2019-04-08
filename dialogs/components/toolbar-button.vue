@@ -36,9 +36,9 @@ export default {
 
 <style lang="scss">
 .toolbar-button button {
-  min-height: 1.25em; /* For Safari, which ignores all other/smaller button size properties. */
+  min-height: 1.25em;
   line-height: 1.25em;
-  min-width: 1.25em;
+  min-width: 1.5em;
   padding: 0;
   overflow: hidden;
   text-align: center;
