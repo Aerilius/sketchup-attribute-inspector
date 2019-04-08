@@ -11162,7 +11162,7 @@ module.exports = g;
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-
+/* WEBPACK VAR INJECTION */(function(global) {
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -11396,7 +11396,10 @@ if (isSketchUp()) {
   requestHandler = new _requestHandlerBrowserPrompt2.default();
 }
 var Bridge = new BridgeClass(requestHandler);
+// Ensure the export is globally available sincerequired by SketchUp Bridge Ruby backend
+if (isSketchUp()) global.Bridge = Bridge;
 exports.default = Bridge;
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../node_modules/webpack/buildin/global.js */ "./node_modules/webpack/buildin/global.js")))
 
 /***/ }),
 
@@ -11427,8 +11430,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
-// TODO: remove requirement to Bridge
 
 function returnMockResult(message, mockCallbacks, callback) {
   var result = mockCallbacks[message.name];
@@ -11524,9 +11525,6 @@ var BrowserPromptRequestHandler = function (_RequestHandler) {
         // Just log the call.
         console.log(request);
       }
-      // Acknowledge that the message has been received and enable the bridge
-      // to send the next message if available (for legacy skp Bridge with message pipe).
-      if (typeof Bridge !== 'undefined' && Bridge.__ack__) Bridge.__ack__();
     }
   }]);
 
@@ -11926,7 +11924,8 @@ var RequestHandler = function () {
         parameters[_key - 2] = arguments[_key];
       }
 
-      var that = this; // TODO: check if needed
+      var _this = this;
+
       try {
         var fn = resolveObjectPath(functionName);
         // For easier testing, return the promise (because it is asynchronous).
@@ -11938,7 +11937,7 @@ var RequestHandler = function () {
           resolve(fn.apply(undefined, parameters));
         }).then(function (result) {
           return new Promise(function (resolve, reject) {
-            that.send({
+            _this.send({
               name: callbackHandlerName,
               parameters: [true, result],
               expectsCallback: false
@@ -11948,7 +11947,7 @@ var RequestHandler = function () {
           if (error instanceof Error) {
             error = errorToJSON(error);
           }
-          that.send({
+          _this.send({
             name: callbackHandlerName,
             parameters: [false, error],
             expectsCallback: false
@@ -11960,7 +11959,7 @@ var RequestHandler = function () {
         }
         // Reject the promise on the other end-point.
         return new Promise(function (resolve, reject) {
-          that.send({
+          _this.send({
             name: callbackHandlerName,
             parameters: [false, error],
             expectsCallback: false
