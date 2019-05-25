@@ -36,7 +36,7 @@ module AE
               # but also the AttributeDictionaries collection is an entity. This adds a second dimension for the hierarchy.
               # How to visualize that? It appears it is never used in practice.
               #if dicts.attribute_dictionaries
-              #  dictionaries.merge!(dicts.attribute_dictionaries) # TODO: It would overwrite dictionaries with same name. Better solution needed.
+              #  dictionaries.concat(get_dictionaries(dicts)) # TODO: It would overwrite dictionaries with same name. Better solution needed.
               #end
             end
             return dictionaries
@@ -110,8 +110,8 @@ module AE
             values = {}
             entities.each{ |entity|
               dictionary = find_dictionary(entity, path)
+              count += 1
               next unless dictionary
-              count += 1 # FIXME: one line above, because if an entity does not have this dictionary, this attribute is nonCommonKey?
               # Merge the attributes.
               dictionary.each{ |key, value|
                 values[key] ||= []
@@ -274,8 +274,7 @@ module AE
             dictionary_name = path.last
             entities.each{ |entity|
               dict = find_dictionary(entity, path, true)
-              # TODO: raise?
-              next warn("AttributeInspector: dictionary `#{path.inspect}` not found for entity #{entity}") unless dict # TODO: can this happen?
+              next warn("AttributeInspector: dictionary `#{path.inspect}` not found for entity #{entity}") unless dict
               ent = dict.parent.parent # attribute_dictionary -> attribute_dictionaries -> entity
               ent.set_attribute(dictionary_name, attribute, value)
             }
@@ -329,6 +328,7 @@ module AE
           # @param [Boolean] create - Whether to create missing dictionaries when not found.
           # @return [Sketchup::AttributeDictionary,nil]
           def find_dictionary(entity, path, create=false)
+            return nil if path.empty?
             dict = path.inject(entity){ |e, name|
               break nil if e.nil?
               e.attribute_dictionary(name, create)

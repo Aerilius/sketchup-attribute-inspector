@@ -47,20 +47,8 @@ module AE
       end
       alias_method(:[], :get)
 
-      # Push translations to a webdialog and translate all html text nodes.
-      # @param [UI::WebDialog] dlg a WebDialog to translate
-      #   It will translate all Text nodes and title attributes.
-      #   It will also offer a JavaScript function to translate single strings.
-      #   Usage: ##Translate.get(string)##
-      def webdialog(dlg)
-        script = %[
-          requirejs(['translate'], function (Translate) {
-              Translate.load(#{to_json(@strings)});
-              Translate.html(document.body);
-          });
-        ]
-        dlg.execute_script(script) unless @strings.empty?
-        nil
+      def to_hash
+        return @strings.clone
       end
 
       private

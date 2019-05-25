@@ -39,9 +39,7 @@ module AE
 
       def refresh
         if @dialog && @dialog.visible?
-          @dialog.get('refresh').then{
-            @dialog_entities = @selected_entities
-          }
+          @dialog.call('refresh')
         end
       end
 
@@ -68,9 +66,8 @@ module AE
         # Add a Bridge to handle JavaScript-Ruby communication.
         Bridge.decorate(dialog)
 
-        dialog.on('translate') {|action_context|
-          # Translate.
-          TRANSLATE.webdialog(dialog)
+        dialog.on('get_translations') {|action_context|
+          action_context.resolve(TRANSLATE.to_hash)
         }
 
         # Callbacks
@@ -89,10 +86,15 @@ module AE
             :id => (!@selected_entities.empty?) ? @selected_entities.map(&:object_id).join('.') : nil,
             :related => get_related(*@selected_entities)
           })
+          # When dialog has completed displaying @selected_entities,
+          # update @dialog_entities so that actions on attribute can be
+          # applied to the new selection.
+          @dialog_entities = @selected_entities
         }
 
         # Select an entity by id.
         dialog.on('select') {|action_context, identifier|
+          # This may raise a RangeError if the object has been garbage-collected.
           select(ObjectSpace._id2ref(identifier))
         }
 
@@ -173,11 +175,11 @@ module AE
           begin
             @model.start_operation(TRANSLATE['Set attribute "%0" to "%1"', attribute, value_string])
             # Convert SketchUp types back from JSON-compatible types
-            value = TypedValueParser.parse(value_string, type_string) # TODO: Need to rescue SyntaxError
+            value = TypedValueParser.parse(value_string, type_string)
             AttributeManipulation.set_attribute(@dialog_entities, path, attribute, value)
             @model.commit_operation
             action_context.resolve
-          rescue Exception => error
+          rescue SyntaxError, Exception => error
             @model.abort_operation
             action_context.reject(error)
           end
@@ -260,7 +262,7 @@ module AE
 
       # Determines a related entity that the user could be interested in.
       # @param [Array<Sketchup::Entity>] entities
-      # @return [String, Fixnum] title, identifier # TODO identifier could be garbage collected
+      # @return [Hash] title, identifier
       def get_related(*entities)
         entities.flatten!
         # If entities have no dictionaries, check if a related selected entity in a
@@ -283,7 +285,7 @@ module AE
           if alternative
             type  = alternative.typename
             return {
-              :title => TRANSLATE['currently selected %0', type],
+              :title => TRANSLATE['currently selected %0', TRANSLATE[type]],
               :id    => alternative.object_id
             }
           end
