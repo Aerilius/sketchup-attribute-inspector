@@ -134,7 +134,6 @@ export default {
         } catch (error) {
           this.$notify('alert', error.message, 'error', 10000)
           return
-          // TODO: ? this.deferred.reject(error)
         }
       }
       this.jsonString = '{}'

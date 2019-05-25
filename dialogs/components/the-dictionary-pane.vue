@@ -188,7 +188,7 @@ export default {
               ', ' +
               JSON.stringify(newName) +
               ')'
-          ) ///////////////////////////
+          )
           Bridge.get('rename_dictionary', self.selectedPath, newName).then(
             function() {
               dictionaryToRename.name = newName
