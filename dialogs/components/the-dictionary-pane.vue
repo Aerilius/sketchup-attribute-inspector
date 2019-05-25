@@ -234,7 +234,11 @@ export default {
     onSelectedDictionary: function(newPath) {
       this.selectedPath = newPath
       this.recentPaths.push(newPath)
-      this.$emit('selectedDictionary', newPath)
+      let selectedDictionary = findDictionary(
+        this.dictionaries,
+        newPath
+      )
+      this.$emit('onSelectedDictionary', newPath, selectedDictionary)
     },
     selectDictionary: function(newPath) {
       this.$refs.treeView.selectPath(newPath)

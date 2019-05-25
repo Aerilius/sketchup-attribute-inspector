@@ -1,11 +1,6 @@
 <template>
-  <tr
-    class="attribute-view"
-    @click="onSelected"
-  >
-    <td
-      class="key"
-    >
+  <tr class="attribute-view" @click="onSelected">
+    <td class="key">
       <input
         ref="keyElement"
         :value="attribute.key"
@@ -18,9 +13,7 @@
         @keyup.esc="blur"
       />
     </td>
-    <td
-      class="value"
-    >
+    <td class="value">
       <textarea
         v-if="attribute.type === 'JSON'"
         ref="valueElement"

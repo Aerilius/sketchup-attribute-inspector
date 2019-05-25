@@ -21,13 +21,15 @@
         ref="theDictionaryPane"
         :selected-entity-id="selectedEntityId"
         style="width: 100%; height: 100%; margin-top: 1px;"
-        @selectedDictionary="selectedDictionary"
+        @onSelectedDictionary="onSelectedDictionary"
       />
       <TheAttributePane
         slot="right"
         ref="theAttributePane"
-        :selected-dictionary="selectedPath"
+        :selected-path="selectedPath"
+        :selected-dictionary="selectedDictionary"
         style="width: 100%; height: 100%; margin-top: 1px;"
+        @attributeChanged="updateIsNonCommonDictionary"
       />
     </SplitPaneVertical>
   </div>
@@ -57,6 +59,7 @@ export default {
     return {
       selectedEntityId: null,
       selectedPath: [],
+      selectedDictionary: null,
     }
   },
   mounted() {
@@ -71,11 +74,20 @@ export default {
       this.selectedEntityId = entityId
       this.$refs.theDictionaryPane.refresh()
     },
-    selectedDictionary(dictionaryPath) {
+    onSelectedDictionary(dictionaryPath, dictionary) {
       console.log('app selectedDictionary', dictionaryPath)
       this.selectedPath = dictionaryPath
+      this.selectedDictionary = dictionary
       // Timeout so that changed property can be propagated into the-attribute-pane.
       Vue.nextTick(this.$refs.theAttributePane.refresh)
+    },
+    updateIsNonCommonDictionary: function() {
+      let self = this
+      Bridge.get('is_non_common_dictionary', self.selectedPath).then(
+        function(isNonCommonDictionary) {
+          self.selectedDictionary.nonCommonDictionary = isNonCommonDictionary
+        }
+      )
     },
   },
 }

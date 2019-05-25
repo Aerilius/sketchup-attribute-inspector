@@ -6,7 +6,7 @@
         ref="tableView"
         :attributes="attributes"
         :selected-attributes="selectedAttributes"
-        :non-common-dictionary="nonCommonDictionary"
+        :non-common-dictionary="selectedDictionary && selectedDictionary.nonCommonDictionary"
         :non-common-editable="nonCommonEditable"
         @attributeChanged="setAttribute"
         @attributeRenamed="renameAttribute"
@@ -62,9 +62,13 @@ import ToolbarButton from './toolbar-button.vue'
 export default {
   components: { TableView, Toolbar, ToolbarButton },
   props: {
-    selectedDictionary: {
+    selectedPath: {
       type: Array,
       default: () => [],
+    },
+    selectedDictionary: {
+      type: Object,
+      default: () => null,
     },
   },
   data: function() {
@@ -72,14 +76,13 @@ export default {
       tr: TRANSLATE.get,
       attributes: null,
       selectedAttributes: [],
-      nonCommonDictionary: false,
       nonCommonEditable: false,
     }
   },
   computed: {
     hasNonCommon: function() {
       return (
-        this.nonCommonDictionary ||
+        this.selectedDictionary && this.selectedDictionary.nonCommonDictionary ||
         (this.attributes &&
           this.attributes.find(function(a) {
             return a.nonCommonKey || a.nonCommonValue
@@ -90,18 +93,12 @@ export default {
   methods: {
     refresh: function() {
       let self = this
-      if (self.selectedDictionary.length === 0) {
+      if (self.selectedPath.length === 0) {
         self.attributes = null
       } else {
-        Bridge.get('get_attributes', self.selectedDictionary).then(
+        Bridge.get('get_attributes', self.selectedPath).then(
           function(attributes) {
             self.attributes = attributes
-            Bridge.get(
-              'is_non_common_dictionary',
-              self.selectedDictionary
-            ).then(function(isNonCommonDictionary) {
-              self.nonCommonDictionary = isNonCommonDictionary
-            })
           },
           function(error) {
             self.attributes = null
@@ -115,7 +112,7 @@ export default {
     },
     onAddAttribute: function(event) {
       if (
-        this.selectedDictionary !== null &&
+        this.selectedPath !== null &&
         this.attributes !== null &&
         !this._findAttributeWithKey('')
       ) {
@@ -129,9 +126,9 @@ export default {
     },
     onRemoveAttribute: function(event) {
       let self = this
-      if (self.selectedDictionary !== null && self.attributes !== null) {
+      if (self.selectedPath !== null && self.attributes !== null) {
         self.selectedAttributes.forEach(function(key) {
-          Bridge.get('remove_attribute', self.selectedDictionary, key).then(
+          Bridge.get('remove_attribute', self.selectedPath, key).then(
             function() {
               let index = self.attributes.findIndex(function(attribute) {
                 return attribute.key == key
@@ -152,7 +149,7 @@ export default {
       let self = this
       Bridge.get(
         'set_attribute',
-        self.selectedDictionary,
+        self.selectedPath,
         newKey,
         newValue,
         newType
@@ -161,7 +158,7 @@ export default {
           // Set is applied to the same attribute in all entities, so it will be created for all
           // entities that didn't have it, and all will receive the same value. Ungray the row and value.
           // TODO: don't bind the key/value elements hard to the data, update the data only here.
-          self._updateIsNonCommonDictionary()
+          self.$emit('attributeChanged', newKey, newValue, newType, oldValue, oldType)
         },
         function(error) {
           self.$notify('alert', error.message, 'error')
@@ -178,7 +175,7 @@ export default {
       let self = this
       Bridge.get(
         'rename_attribute',
-        self.selectedDictionary,
+        self.selectedPath,
         oldKey,
         newKey
       ).then(
@@ -186,7 +183,7 @@ export default {
           self.selectedAttributes = [newKey]
           self.$refs.tableView.focus(newKey)
           // TODO: don't bind the key/value elements hard to the data, update the data only here.
-          self._updateIsNonCommonDictionary()
+          self.$emit('attributeChanged', newKey, newValue, newType, oldValue, oldType)
         },
         function(error) {
           self.$notify('alert', error.message, 'error')
@@ -207,14 +204,6 @@ export default {
         this.attributes.find(function(attribute) {
           return attribute.key === key
         })
-      )
-    },
-    _updateIsNonCommonDictionary: function() {
-      let self = this
-      Bridge.get('is_non_common_dictionary', self.selectedDictionary).then(
-        function(isNonCommonDictionary) {
-          self.nonCommonDictionary = isNonCommonDictionary
-        }
       )
     },
   },
