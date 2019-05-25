@@ -284,7 +284,7 @@ module AE
           if alternative
             type  = alternative.typename
             return {
-              :title => TRANSLATE['currently selected %0', type],
+              :title => TRANSLATE['currently selected %0', TRANSLATE[type]],
               :id    => alternative.object_id
             }
           end
