@@ -94,6 +94,7 @@ module AE
 
         # Select an entity by id.
         dialog.on('select') {|action_context, identifier|
+          # This may raise a RangeError if the object has been garbage-collected.
           select(ObjectSpace._id2ref(identifier))
         }
 
@@ -261,7 +262,7 @@ module AE
 
       # Determines a related entity that the user could be interested in.
       # @param [Array<Sketchup::Entity>] entities
-      # @return [String, Fixnum] title, identifier # TODO identifier could be garbage collected
+      # @return [Hash] title, identifier
       def get_related(*entities)
         entities.flatten!
         # If entities have no dictionaries, check if a related selected entity in a
