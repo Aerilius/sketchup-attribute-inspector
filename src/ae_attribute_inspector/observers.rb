@@ -1,9 +1,6 @@
 require 'sketchup.rb'
 
-# TODO: rename select into update, also in attribute_inspector.rb
-# TODO: inverse dependency, use observer pattern?
-# These observers currently have an reference to an attribute_inspector and call inspect on it.
-# Instead, create a common observer interface on which attribute_inspector registers on(:selected){ |*selected| inspect(*selected) }
+
 module AE
 
 

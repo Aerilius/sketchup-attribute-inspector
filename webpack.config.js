@@ -21,7 +21,6 @@ module.exports = {
         test: /\.js$/,
         use: {
           loader: 'babel-loader',
-          //include: [resolve('src'), resolve('test'), resolve('node_modules/vue2-collapse')]
         }
       },
       {

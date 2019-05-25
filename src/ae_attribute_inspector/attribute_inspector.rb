@@ -93,7 +93,7 @@ module AE
         when Mode::Page then
           @model.pages.selected_page
         when Mode::Style then
-          @model.styles.selected_style # TODO
+          @model.styles.selected_style
         end
         select(entities)
         return self

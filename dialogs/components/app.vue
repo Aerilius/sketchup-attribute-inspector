@@ -70,12 +70,10 @@ export default {
       this.$refs.theEntityPane.refresh()
     },
     selectedEntity(entityId) {
-      console.log('app selectedEntity', entityId)
       this.selectedEntityId = entityId
       this.$refs.theDictionaryPane.refresh()
     },
     onSelectedDictionary(dictionaryPath, dictionary) {
-      console.log('app selectedDictionary', dictionaryPath)
       this.selectedPath = dictionaryPath
       this.selectedDictionary = dictionary
       // Timeout so that changed property can be propagated into the-attribute-pane.
