@@ -174,11 +174,11 @@ module AE
           begin
             @model.start_operation(TRANSLATE['Set attribute "%0" to "%1"', attribute, value_string])
             # Convert SketchUp types back from JSON-compatible types
-            value = TypedValueParser.parse(value_string, type_string) # TODO: Need to rescue SyntaxError
+            value = TypedValueParser.parse(value_string, type_string)
             AttributeManipulation.set_attribute(@dialog_entities, path, attribute, value)
             @model.commit_operation
             action_context.resolve
-          rescue Exception => error
+          rescue SyntaxError, Exception => error
             @model.abort_operation
             action_context.reject(error)
           end
