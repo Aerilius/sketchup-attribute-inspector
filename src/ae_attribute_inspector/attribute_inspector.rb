@@ -4,38 +4,14 @@ module AE
   module AttributeInspector
 
 
-# TODO: utils.rb ?
-module Utils
-
-  def self.log_error(error)
-    if defined?(AE::ConsolePlugin)
-      AE::ConsolePlugin.error(error)
-    else
-      $stderr.write(error.message + $/)
-      $stderr.write(error.backtrace.join($/) + $/)
-    end
-  end
-
-  def self.catch_errors(&block)
-    begin
-      return block.call
-    rescue Exception => error
-      self.log_error(error)
-    end
-  end
-
-end
-
     require(File.join(PATH, 'inspector_dialog.rb'))
-    #require(File.join(PATH, 'observable.rb'))
     require(File.join(PATH, 'observing.rb'))
+    require(File.join(PATH, 'utils.rb'))
 
 
     class AttributeInspector
 
       include AttributeInspectorDialog
-
-      #include Observable
 
       MAX_ENTITIES_LIMIT = 100 unless defined?(self::MAX_ENTITIES_LIMIT) # The maximum amount of entities in the selection set that will be processed by this plugin, for performance reasons.
 
