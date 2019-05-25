@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar left vertical-centered-parent">
+  <div class="toolbar vertical-centered-parent">
     <slot />
   </div>
 </template>

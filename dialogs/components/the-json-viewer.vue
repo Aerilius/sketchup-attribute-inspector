@@ -4,25 +4,34 @@
     style="position: absolute; width: 100%; height: 100%; z-index: 100; background-color: Window;"
     @keyup.esc="close"
   >
-    <Toolbar style="width: 100%; height: 2.5em">
-      <ToolbarButton
-        style="width: 0;"
-        @click.native="activeTab = 0"
+    <div style="width: 100%; height: 2.5em">
+      <Toolbar
+        style="float: left"
       >
-        {{ tr('JSON Tree') }}
-      </ToolbarButton>
-      <ToolbarButton
-        @click.native="function() { activeTab = 1;focus() }"
+        <ToolbarButton
+          style="width: 0;"
+          @click.native="activeTab = 0"
+        >
+          {{ tr('JSON Tree') }}
+        </ToolbarButton>
+        <ToolbarButton
+          @click.native="function() { activeTab = 1;focus() }"
+        >
+          {{ tr('JSON Source') }}
+        </ToolbarButton>
+      </Toolbar>
+      <Toolbar
+        class="right"
+        style="float: right; margin-right: 0;"
       >
-        {{ tr('JSON Source') }}
-      </ToolbarButton>
-      <ToolbarButton
-        style="float: right; padding: 0.25em;"
-        @click.native="submit"
-      >
-        ×
-      </ToolbarButton>
-    </Toolbar>
+        <ToolbarButton
+          style="padding: 0.25em;"
+          @click.native="submit"
+        >
+          ×
+        </ToolbarButton>
+      </Toolbar>
+    </div>
     <div
       style="position: absolute; top: 2.5em; bottom: 0; width: 100%; border: 1px ThreeDShadow solid;"
     >
