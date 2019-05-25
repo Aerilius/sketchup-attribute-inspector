@@ -1,8 +1,7 @@
 import Vue from 'vue'
-import Bridge from './bridge.js'
+import Bridge from 'sketchup-bridge'
 
 Vue.config.errorHandler = function(error, node, info) {
-  console.log('errorHandler', error, node, info)
   Bridge.error(error)
 }
 

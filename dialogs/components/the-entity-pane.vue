@@ -47,7 +47,7 @@
 <script>
 import '../vendor/vs-notify.js'
 import ClipBox from './clip-box.vue'
-import Bridge from '../bridge.js'
+import Bridge from 'sketchup-bridge'
 import TRANSLATE from '../translate'
 
 export default {

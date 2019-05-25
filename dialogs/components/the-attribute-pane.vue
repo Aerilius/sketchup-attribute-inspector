@@ -53,7 +53,7 @@
 
 <script>
 import Vue from 'vue'
-import Bridge from '../bridge.js'
+import Bridge from 'sketchup-bridge'
 import TRANSLATE from '../translate.js'
 import TableView from './table-view.vue'
 import Toolbar from './toolbar.vue'

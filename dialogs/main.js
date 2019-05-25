@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Bridge from './bridge.js'
+import Bridge from 'sketchup-bridge'
 //import './error_handlers.js'
 import App from './components/app.vue'
 import TRANSLATE from './translate.js'

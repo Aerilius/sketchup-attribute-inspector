@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "debounce": "^1.2.0",
+    "sketchup-bridge": "^3.0.1",
     "vue": "^2.6.10",
     "vue-json-viewer": "^2.1.4"
   },
