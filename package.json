@@ -11,7 +11,7 @@
   "private": true,
   "scripts": {
     "release": "npm run build && npm run package",
-    "package": "rm && bundle exec rake build_rbz",
+    "package": "bundle exec rake build_rbz",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules",
     "dev": "cross-env NODE_ENV=development webpack --progress --hide-modules",
     "dev-server": "cross-env NODE_ENV=development webpack-dev-server --open --hot",
