@@ -17,7 +17,7 @@ module AE
       end
 
 
-      def self.catch_errors(&block)
+      def self.log_errors(&block)
         begin
           return block.call
         rescue Exception => error

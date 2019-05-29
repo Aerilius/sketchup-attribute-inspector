@@ -23,7 +23,7 @@ module AE
         # up-to-date anymore. Because of this, we filter out double triggers by waiting
         # in onSelectionCleared and checking whether it is followed by onSelectionBulkChange.
         def onSelectionBulkChange(selection)
-          Utils.catch_errors{
+          Utils.log_errors{
             @is_selection_cleared = false unless selection.empty?
             @instance.select(*selection.to_a)
           }
@@ -32,7 +32,7 @@ module AE
         def onSelectionCleared(selection)
           @is_selection_cleared = true
           UI.start_timer(0, false) {
-            Utils.catch_errors{
+            Utils.log_errors{
               @instance.select(*selection.to_a) if @is_selection_cleared
             }
           }
@@ -51,7 +51,7 @@ module AE
         # Since active/selected definition in DefinitionsList can not be observed, 
         # we workaround it and use the definition of the selected DrawingElement.
         def onSelectionBulkChange(selection)
-          Utils.catch_errors{
+          Utils.log_errors{
             @is_selection_cleared = false unless selection.empty?
             definitions = selection.to_a.select{ |e| e.respond_to?(:definition) }.map{ |e| e.definition }
             @instance.select(*definitions)
@@ -61,7 +61,7 @@ module AE
         def onSelectionCleared(selection)
           @is_selection_cleared = true
           UI.start_timer(0, false) {
-            Utils.catch_errors{
+            Utils.log_errors{
               if @is_selection_cleared
                 definitions = selection.to_a.select{ |e| e.respond_to?(:definition) }.map{ |e| e.definition }
                 @instance.select(*definitions)
@@ -81,7 +81,7 @@ module AE
 
         def onMaterialSetCurrent(materials, material)
           # TODO: This should trigger when Materials#current changes.
-          Utils.catch_errors{
+          Utils.log_errors{
             @instance.select(material)
           }
         end
@@ -96,7 +96,7 @@ module AE
         end
 
         def onCurrentLayerChanged(layers, layer)
-          Utils.catch_errors{
+          Utils.log_errors{
             @instance.select(layer)
           }
         end
@@ -112,7 +112,7 @@ module AE
 
         # TODO: This does not trigger when Pages#selected_page changes, only when a page is modified.
         def onContentsModified(pages)
-          Utils.catch_errors{
+          Utils.log_errors{
             @instance.select(pages.selected_page)
           }
         end
@@ -131,7 +131,7 @@ module AE
         # is not triggered for changed active/selected style,
         # we workaround it and observe the rendering options.
         def onRenderingOptionsChanged(rendering_options, type)
-          Utils.catch_errors{
+          Utils.log_errors{
             styles = rendering_options.model.styles
             if styles.selected_style != @selected_style
               @active_style = styles.selected_style
@@ -149,13 +149,13 @@ module AE
         end
 
         def onTransactionUndo(model)
-          Utils.catch_errors{
+          Utils.log_errors{
             @instance.refresh
           }
         end
 
         def onTransactionRedo(model)
-          Utils.catch_errors{
+          Utils.log_errors{
             @instance.refresh
           }
         end
@@ -174,19 +174,19 @@ module AE
         end
 
         def onNewModel(model)
-          Utils.catch_errors{
+          Utils.log_errors{
             @instance.model = model
           }
         end
 
         def onOpenModel(model)
-          Utils.catch_errors{
+          Utils.log_errors{
             @instance.model = model
           }
         end
 
         def onActivateModel(model)  
-          Utils.catch_errors{
+          Utils.log_errors{
             @instance.model = model
           }
         end
