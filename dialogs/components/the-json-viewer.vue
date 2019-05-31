@@ -155,6 +155,9 @@ export default {
   max-height: initial !important;
   overflow: visible !important;
 }
+.jv-container {
+  font-size: inherit !important;
+}
 .jv-container .jv-more {
   display: none !important;
 }
