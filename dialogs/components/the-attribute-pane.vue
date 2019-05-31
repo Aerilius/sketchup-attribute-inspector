@@ -183,7 +183,7 @@ export default {
           self.selectedAttributes = [newKey]
           self.$refs.tableView.focus(newKey)
           // TODO: don't bind the key/value elements hard to the data, update the data only here.
-          self.$emit('attributeChanged', newKey, newValue, newType, oldValue, oldType)
+          self.$emit('attributeChanged', newKey)
         },
         function(error) {
           self.$notify('alert', error.message, 'error')
