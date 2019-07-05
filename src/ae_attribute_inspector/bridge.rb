@@ -4,7 +4,7 @@ module AE
 
     class Bridge
 
-      VERSION = '3.0.1'.freeze unless defined?(self::VERSION)
+      VERSION = '3.0.2'.freeze unless defined?(self::VERSION)
 
     end
 
@@ -389,7 +389,7 @@ module AE
             def self.generate(object)
               # Split at every even number of unescaped quotes. This gives either strings
               # or what is between strings.
-              object = self.traverse_object(object.clone){ |element| element.is_a?(Symbol) ? element.to_s : element }
+              object = traverse_object(object.clone){ |element| element.is_a?(Symbol) ? element.to_s : element }
               json_string = object.inspect.split(/("(?:\\"|[^"])*")/).
                   map { |string|
                 next string if string[0..0] == '"' # is a string in quotes
@@ -436,11 +436,11 @@ module AE
             # Traverses containers of a JSON-like object recursively and applies a code block
             def self.traverse_object(o, &block)
               if o.is_a?(Array)
-                return o.map{ |v| self.traverse_object(v) }
+                return o.map{ |v| traverse_object(v, &block) }
               elsif o.is_a?(Hash)
                 o_copy = {}
                 o.each{ |k, v|
-                  o_copy[self.traverse_object(k)] = self.traverse_object(v)
+                  o_copy[traverse_object(k, &block)] = traverse_object(v, &block)
                 }
                 return o_copy
               else
@@ -456,6 +456,7 @@ module AE
       end
 
     end # class Bridge
+
 
 
 
@@ -529,8 +530,8 @@ module AE
     class Bridge
 
 
+      # @private
       module Utils
-
 
         def self.log_error(error, metadata={})
           if defined?(AE::ConsolePlugin)
@@ -554,6 +555,7 @@ module AE
 
     class Bridge
 
+      # @private
       class RequestHandler # interface
 
         def send(message)
@@ -566,6 +568,7 @@ module AE
 
       end
 
+      # @private
       class DialogRequestHandler < RequestHandler # abstract class
 
         def initialize(dialog, bridge=nil)
@@ -625,6 +628,7 @@ module AE
 
       end
 
+      # @private
       class RequestHandlerHtmlDialog < DialogRequestHandler
 
         # Receives the raw messages from the HtmlDialog (Bridge.call) and chooses the corresponding callbacks.
@@ -640,6 +644,7 @@ module AE
 
       end
 
+      # @private
       class RequestHandlerWebDialog < DialogRequestHandler
 
         # Receives the raw messages from the WebDialog (Bridge.call) and chooses the corresponding callbacks.
@@ -820,6 +825,7 @@ module AE
         }
       end
 
+      # @private
       attr_reader :handlers
 
       private

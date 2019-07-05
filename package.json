@@ -1,6 +1,6 @@
 {
   "name": "ae_attribute_inspector",
-  "version": "3.0.0",
+  "version": "3.0.2",
   "description": "A viewer and editor for SketchUp entity and model attributes.",
   "author": "Aerilius",
   "license": "MIT",
