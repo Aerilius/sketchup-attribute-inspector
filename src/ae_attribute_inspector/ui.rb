@@ -35,7 +35,6 @@ module AE
       # Icons
       command.large_icon = command.small_icon = get_resource_path('icon')
       # Metadata
-      # Metadata
       command.tooltip = TRANSLATE['A viewer for entity and model attributes']
       command.status_bar_text = TRANSLATE['Select an entity to view and edit its attribute dictionaries.']
       return command
