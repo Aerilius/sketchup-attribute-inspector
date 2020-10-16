@@ -38,11 +38,11 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Aerili
 
 ## Development
 
-First, run `bundle install` to install requirements.
+First, run `npm install` and `bundle install` to install requirements.
 
 Run `bundle exec rake test` to run the tests.
 
-To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version and push git commits and tags.
+To release a new version, update the version number in `version.rb`, and then run `npm run build` and `bundle exec rake release`, which will create a git tag for the version and push git commits and tags.
 
 To build a new installation package , run `bundle exec rake build_rbz`.
 
