@@ -14,6 +14,13 @@ This inspector tries to keep the user interface minimal and very efficient: Just
 
 - Alternatively, you can install the contents of the `src` directory into your plugins folder.
 
+  If you choose to run from source rather than use the release `rbz` file, you'll need to run from the `sketchup-attribute-inspector` folder:
+
+  ```shell
+  npm install
+  npm build
+  ```
+
 ## Usage
 
 (Menu) `Window → Attribute Inspector`
@@ -38,11 +45,11 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Aerili
 
 ## Development
 
-First, run `bundle install` to install requirements.
+First, run `npm install` and `bundle install` to install requirements.
 
 Run `bundle exec rake test` to run the tests.
 
-To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version and push git commits and tags.
+To release a new version, update the version number in `version.rb`, and then run `npm run build` and `bundle exec rake release`, which will create a git tag for the version and push git commits and tags.
 
 To build a new installation package , run `bundle exec rake build_rbz`.
 
