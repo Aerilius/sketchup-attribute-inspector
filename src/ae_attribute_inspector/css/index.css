@@ -113,6 +113,7 @@ textarea.editable {
     margin: 0;
     overflow-y: auto;
     resize: vertical; /* not supported in IE<=11 */
+    color: inherit; /* Inherit text color when parent element (tr) is selected */
 }
 
 
