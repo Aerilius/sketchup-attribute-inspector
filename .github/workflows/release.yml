@@ -1,0 +1,89 @@
+name: Release SketchUp extension
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build_javascript:
+    name: Build JavaScript library
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build JavaScript library
+      run: npm run build
+
+    - name: Archive production artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: js-lib
+        path: src/ae_attribute_inspector/js/main.js
+
+  build_sketchup_extension:
+    name: Build SketchUp extension rbz package
+    runs-on: ubuntu-latest
+    needs: build_javascript
+    steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Use Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.0'
+
+    - name: Install dependencies
+      run: bundle install
+
+    - name: Download a single artifact
+      uses: actions/download-artifact@v4
+      with:
+        name: js-lib
+        path: src/ae_attribute_inspector/js/main.js
+
+    - name: Build package
+      run: bundle exec rake build_rbz
+
+    - name: Upload package as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        path: ae_attribute_inspector*.rbz
+
+    - name: Add package to release
+      uses: actions/github-script@v7
+      env:
+        path: ae_attribute_inspector*.rbz
+      with:
+        script: |
+          // From https://til.simonwillison.net/github-actions/attach-generated-file-to-release
+          const fs = require('fs')
+          const path = require('path')
+          // Resolve any wildcards with glob (by default included from @actions/glob)
+          const globber = await glob.create(process.env.path)
+          const assetPath = (await globber.glob())[0]
+          // Get release for this tag
+          const tag = context.ref.replace('refs/tags/', '')
+          const release = await github.repos.getReleaseByTag({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            tag
+          })
+          // Upload the release asset
+          await github.repos.uploadReleaseAsset({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: release.data.id,
+            name: path.basename(assetPath),
+            data: await fs.readFileSync(assetPath)
+          })
