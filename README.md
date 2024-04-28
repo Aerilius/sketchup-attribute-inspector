@@ -14,12 +14,12 @@ This inspector tries to keep the user interface minimal and very efficient: Just
 
 - Alternatively, you can install the contents of the `src` directory into your plugins folder.
 
-If you choose to run from source rather than use the release `rbz` file, you'll need to run from the `sketchup-attribute-inspector` folder:
+  If you choose to run from source rather than use the release `rbz` file, you'll need to run from the `sketchup-attribute-inspector` folder:
 
-```shell
-npm install
-npm build
-```
+  ```shell
+  npm install
+  npm build
+  ```
 
 ## Usage
 
