@@ -4,7 +4,7 @@ require 'extensions.rb'
 require File.join('ae_attribute_inspector', 'version.rb')
 
 # Create the extension.
-ext = SketchupExtension.new('AttributeInspector', File.join('ae_attribute_inspector', 'core.rb'))
+ext = SketchupExtension.new('AttributeInspector', File.join('ae_attribute_inspector', 'core'))
 
 # Attach some nice info.
 ext.creator     = 'Aerilius'
